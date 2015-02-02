@@ -88,8 +88,9 @@ def recenter (clusters,deltaMeans):
 #to extract the means so that they can be given back to main
 def extractMeans (clusters):
 	means = []
-	for i in range(len(clusters)-1):
-		
+	for cluster in clusters[1:]:
+		means += cluster[0]
+	return means
 
 #The k-means clustering algorithm, managing the termination of the 
 def cluster (peaks, means):
