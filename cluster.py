@@ -65,7 +65,7 @@ def recenter (clusters,deltaMean):
 		for i in range(len(cluster[0])):
 			prototype += [[0,0,0,0]]
 		#calculating the distribution in bases of the mean
-		meanWords = wordify(cluster[0])
+		meanWords = Align.wordify(cluster[0])
 		for peak in cluster:
 			i = index_of_align(peak,meanWords)
 			#May want to change this for extending means - when peaks flow over

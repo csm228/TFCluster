@@ -56,7 +56,7 @@ def pickMeans (peaks, numMeans):
 	seeds += [seed]
 	for i in range(numMeans):
 		(seed, subSample) = kPlusPlus(subSample)
-		seeds += 
+		seeds += [seed]
 	return seeds
 
 

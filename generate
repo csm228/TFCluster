@@ -1,0 +1,10 @@
+#!/bin/sh
+#generates a dataset from motifMaker by name
+set -o nounset
+if [ -z $1 ]
+then
+  echo "Usage: $0 <name of generated data>"
+  exit
+else
+  python motifMaker.py 100 1000 25 55 testData/gs$1
+fi

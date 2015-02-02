@@ -14,5 +14,5 @@ def test_generated():
 	return
 
 print ['test_start']
-generate_standard()
+
 print ['test_end']
