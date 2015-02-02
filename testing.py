@@ -1,6 +1,10 @@
 #For the purpose of writing test scripts
 
-def outputLoc = 
+outputLoc = 'testData/generated1'
+
+def generate_standard():
+	os.system(("python motifMaker.py 100 1000 5 14 " + outputLoc))
+	return
 
 def test_generated():
 	data = Load.process_Generated()
@@ -10,5 +14,5 @@ def test_generated():
 	return
 
 print ['test_start']
-test_generated()
+generate_standard()
 print ['test_end']

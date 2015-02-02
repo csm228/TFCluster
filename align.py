@@ -1,12 +1,12 @@
 
 #how long the words will be
-def wordLength = 5
+wordLength = 5
 
 #Lower bound for inclusion in high scoring words
-def highScoreThreshold = 3.0
+highScoreThreshold = 3.0
 
 #Distance that two words must be under to group into a segment pair
-def segPairWordMaxDist = 8
+segPairWordMaxDist = 8
 
 #The matrix array of characters is 
 def compare (character, probArray):

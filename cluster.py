@@ -1,9 +1,9 @@
 
 #Currently we just throw out peaks that the alignment algorithm
 #doesn't align (returns 0 instead)
-def outlierThreshold = 0
+outlierThreshold = 0
 
-def allocationCessationThreshold = 1000
+allocationCessationThreshold = 1000
 
 #In case the datatype changes, or we want to
 #remember the cluster of the peak by storing it in the peak

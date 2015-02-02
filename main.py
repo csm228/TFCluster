@@ -2,7 +2,7 @@
 import math
 
 #The p-value to check against to stop the clustering algorithm. Change this
-def probabilityThreshold = .05
+probabilityThreshold = .05
 
 #Use an asymptotic function with the Welch's t-test p-value as a seed for
 #how far along the function to pick (closer to stable -> fewer new means)
@@ -55,7 +55,7 @@ def pickMeans (peaks, numMeans):
 	(seed, subSample) = sample(subSample)
 	seeds += [seed]
 	for i in range(numMeans):
-		()
+		(seed, subSample) = kPlusPlus(subSample)
 		seeds += 
 	return seeds
 
@@ -74,9 +74,10 @@ def variance (cluster):
 def stdDev (cluster):
 	return math.sqrt(variance(cluster))
 
-def parse(file):
+def parse(filename):
+	return Load.process_Generated(filename)
 
-#Tie this to subsample
+#Tie this to subsample in the future - you need 
 def guessInitMeans(peaks):
 	return 5
 
