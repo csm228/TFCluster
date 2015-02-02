@@ -63,7 +63,7 @@ def pickMeans (peaks, numMeans):
 # try storing prev. cluster variance? - in main
 def variance (cluster):
 	sumVar = 0
-	for seq in cluster[1:]
+	for seq in cluster[1:]:
 		(index, score) = align(seq, cluster[0])
 		sumVar += score
 	#Integer division?
@@ -74,11 +74,13 @@ def variance (cluster):
 def stdDev (cluster):
 	return math.sqrt(variance(cluster))
 
-def parse(filename):
-	return Load.process_Generated(filename)
-
 #Tie this to subsample in the future - you need 
 def guessInitMeans(peaks):
+	return 5
+
+#Guesses how many more means will be needed
+#Just iterates by 5. Ouch.
+def guessNewMeans(peaks, means):
 	return 5
 
 def welchTest (prevClusters,currClusters):
@@ -91,12 +93,27 @@ def welchTest (prevClusters,currClusters):
 	(t_stat,p_val) = scipy.stats.ttest_ind(prevMeans, currMeans, equal_var = False)
 	return p_val
 
+def clustrifyMeans (means):
+	listifiedMeans = []
+	for i in range(len(means)):
+		listifiedMeans += [means[i]]
+	return listifiedMeans
+
 # print a line when the variance goes back up between means
 # Requires a list of peaks where the sequence is the first element of the peak
-def main (filename):
-	peaks = parse(filename)
+def main (peaks):
 	prevClusters = []
-	#The extra list on the end is for outliers
-	currClusters = [[]] + pickMeans(peaks,guessInitMeans(peaks))
+	means = pickMeans(peaks,guessInitMeans(peaks))
+	#The extra list at the beginning is for outliers,
+	#and is initialized with all peaks
+	currClusters = [peaks] + clustrifyMeans(means)
+	#Aliasing issues? lists within lists?
+	prevClusters = list(currClusters)
+	(means,currClusters) = Cluster.cluster(peaks,means)
 	while welchTest(prevClusters,currClusters) > probabilityThreshold:
-		cluster(peaks,means)
+		numNewMeans = guessNewMeans(peaks, means)
+		outliers = currClusters[0]
+		means += pickMeans(outliers,numNewMeans)
+		prevClusters = list(currClusters)
+		(means,currClusters) = Cluster.cluster(peaks,means)
+	return currClusters

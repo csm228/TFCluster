@@ -6,5 +6,5 @@ then
   echo "Usage: $0 <name of generated data>"
   exit
 else
-  python motifMaker.py 100 1000 25 55 testData/gs$1
+  python motifMaker.py 100 1000 25 55 testData/genSet$1
 fi

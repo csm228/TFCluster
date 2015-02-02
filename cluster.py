@@ -57,7 +57,7 @@ def difference (prevMean, currMean):
 #if recentered mean moves from seed (previous mean), throw out and pick only from outliers
 #recenter on the fly: store number in cluster and just add then average??
 #The calculation step of the "centroids" of the clusters
-def recenter (clusters,deltaMean):
+def recenter (clusters,deltaMeans):
 	for cluster in clusters[1:]:
 		#The prototypical mean, generated at 
 		prototype = []
@@ -70,7 +70,7 @@ def recenter (clusters,deltaMean):
 			i = index_of_align(peak,meanWords)
 			#May want to change this for extending means - when peaks flow over
 			#Currently, it just keeps the original seed length & alignment
-			for j in range(min(len(peak),len(cluster[0] - i))):
+			for j in range(min(len(peak),(len(cluster[0]) - i))):
 				count(peak[0][j],prototype[i+j])
 		for loc in prototype:
 			count = 0
@@ -78,16 +78,25 @@ def recenter (clusters,deltaMean):
 				count += prob
 			for prob in loc:
 				prob /= count
-		deltaMean += difference(cluster[0],prototype)
+		#Here is where highly variant means should be thrown out,
+		#but need to allow for the first run with a mean - 
+		# the seed will always have high change
+		deltaMeans += difference(cluster[0],prototype)
 		cluster[0] = prototype
-		return delta_mean
+		return deltaMeans
+
+#to extract the means so that they can be given back to main
+def extractMeans (clusters):
+	means = []
+	for i in range(len(clusters)-1):
+		
 
 #The k-means clustering algorithm, managing the termination of the 
 def cluster (peaks, means):
-	#The total change in the means by alignment score
-	deltaMean = 1001
+	#The total change in the means by alignment score, this should be eventually replaced
+	deltaMeans = 1001
     clusters = []
-	while delta_mean > allocationCessationThreshold:
+	while deltaMeans > allocationCessationThreshold:
 		clusters = allocate (peaks,means)
-		deltaMean = recenter (peaks,means,clusters)
-	return clusters
+		deltaMeans = recenter (clusters,0)
+	return (extractMeans(clusters),clusters)

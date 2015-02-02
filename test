@@ -2,8 +2,8 @@
 set -o nounset
 if [ -f testData/gs$1 ]
 then
-  echo "Usage: $0 <name of existing generated data>"
+  echo "Usage: $0 <name of existing genSet data>"
   exit
 else
-  python testing.py testData/gs$1
+  python testing.py testData/genPeaks$1 testData/clusteredGenPeaks$1
 fi
