@@ -7,12 +7,13 @@ def process_Generated (testData):
 	source = open(testData)
 	data = []
 	for line in source:
-		datum = line.strip().split(',')
+		datum = line.strip().split('\t')
 		datum[0] = (str(datum[0])).upper
 		datum[1] = int(datum[1])
 		datum[2] = int(datum[2])
 		datum[3] = list(datum[3])
-		data.append(datum)
+		#data.append(datum)
+		data += [datum]
 	return data
 
 #takes an ENCODE narrowPeak file and outputs a list of lists (peaks)
@@ -58,14 +59,14 @@ def get_seqs(data,chromosome):
 
 
 def test():
-	chrom = process_chrom('chr21.fa')
-	data = process_DNase('ENCFF001WIR.narrowPeak_chr21.np')
+	chrom = process_chrom('data/chr21.fa')
+	data = process_DNase('data/ENCFF001WIR.narrowPeak_chr21.np')
 	peaks = get_seqs (data,chrom)
 	for peak in peaks:
 		print peak
 	return
 
 
-print ['test']
-test()
-print ['test2']
+print ['load_test - odd python attributes']
+#test()
+print ['load_test2']

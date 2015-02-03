@@ -1,4 +1,6 @@
-
+import align
+import cluster
+import random
 import math
 
 #The p-value to check against to stop the clustering algorithm. Change this
@@ -18,20 +20,20 @@ def sample (peaks):
 	index = random.randrange(len(peaks))
 	return (peaks.pop(index),peaks)
 
-def minScore (seq, meanWordsList):
+def minScore (peak, meanWordsList):
 	#align gives a tuple of index, score, so take the score
-	minVal = score_of_align(seq, meanWordsList[0]))
+	minVal = align.score_of_align(peak, meanWordsList[0])
 	for meanWords in meanWordsList[1:]:
-		minVal = min(minVal, score_of_align(seq,meanWords))
+		minVal = min(minVal, align.score_of_align(peak,meanWords))
 	return minVal
 
 def kPlusPlus (means, peaks):
 	meanWordsList = []
 	for mean in means:
-		meanWordsList += align.wordify(mean)
+		meanWordsList += [align.wordify(mean)]
 	seedIndex = 0
 	minVal = minScore(peaks[0], meanWordsList)
-	for i in range(1,len(peaks) - 1):
+	for i in range(1,len(peaks)):
 		#Bias? should this be randomized instead?
 		if minScore(peaks[i], meanWordsList) < minVal:
 			seedIndex = i
@@ -55,7 +57,7 @@ def pickMeans (peaks, numMeans):
 	(seed, subSample) = sample(subSample)
 	seeds += [seed]
 	for i in range(numMeans):
-		(seed, subSample) = kPlusPlus(subSample)
+		(seed, subSample) = kPlusPlus(seeds,subSample)
 		seeds += [seed]
 	return seeds
 
@@ -64,7 +66,7 @@ def pickMeans (peaks, numMeans):
 def variance (cluster):
 	sumVar = 0
 	for seq in cluster[1:]:
-		(index, score) = align(seq, cluster[0])
+		(index, score) = align.align(seq, cluster[0])
 		sumVar += score
 	#Integer division?
 	return (sumVar / (len(cluster) - 1))
@@ -109,11 +111,11 @@ def main (peaks):
 	currClusters = [peaks] + clustrifyMeans(means)
 	#Aliasing issues? lists within lists?
 	prevClusters = list(currClusters)
-	(means,currClusters) = Cluster.cluster(peaks,means)
+	(means,currClusters) = cluster.cluster(peaks,means)
 	while welchTest(prevClusters,currClusters) > probabilityThreshold:
 		numNewMeans = guessNewMeans(peaks, means)
 		outliers = currClusters[0]
 		means += pickMeans(outliers,numNewMeans)
 		prevClusters = list(currClusters)
-		(means,currClusters) = Cluster.cluster(peaks,means)
+		(means,currClusters) = cluster.cluster(peaks,means)
 	return currClusters

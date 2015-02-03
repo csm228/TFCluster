@@ -18,7 +18,8 @@ def compare (character, probArray):
 		return probArray[2]
 	if character == C:
 		return probArray[3]
-	else print "Incorrect string in peaks, implement error handling"
+	else:
+		print "Incorrect string in peaks, implement error handling"
 
 def scorePair (seqWord,meanWord):
 	#if misalignments become an issue, use weighted mean?
@@ -56,7 +57,7 @@ def align (peak, meanWords):
 				(score2,i2,j2) = highScoreWords[k]
 				#Second high-scoring word must be close enough, on the same alignment
 				dist = abs(i1-i2)
-				if (dist < segPairWordMaxDist) && (i1 - i2 + j2 = j1):
+				if (dist < segPairWordMaxDist) and (i1 - i2 + j2 == j1):
 					segScore = 0
 					for m in range(dist):
 						seqScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
@@ -75,10 +76,10 @@ def align_mean (peak, mean):
 	return align(peak, wordify(mean))
 
 #kinda sad functions, just left them in, used in cluster.py
-def index_of_align(seq, meanWords):
-	(i,score) = align(seq,meanWords)
+def index_of_align(peak, meanWords):
+	(i,score) = align(peak,meanWords)
 	return i
 
-def score_of_align(seq, meanWords):
-	(i,score) = align(seq,meanWords)
+def score_of_align(peak, meanWords):
+	(i,score) = align(peak,meanWords)
 	return score

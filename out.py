@@ -14,7 +14,7 @@ def clusterWriter(cluster, outfile):
 
 def writeOutput(filename, clusters):
 	outfile = open(filename, 'w')
-	outfile.write('Outliers\n')
+	outfile.write('Putative Outliers\n')
 	clusterWriter(clusters[0], outfile)
 	for i in range(1,len(clusters)):
 		outfile.write('Cluster ' + str(i) + '\n')

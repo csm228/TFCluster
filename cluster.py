@@ -1,3 +1,4 @@
+import align
 
 #Currently we just throw out peaks that the alignment algorithm
 #doesn't align (returns 0 instead)
@@ -18,16 +19,24 @@ def allocate (peaks, means):
 	meanWordLists = []
 	for mean in means:
 		clusters += [[mean]]
-		meanWordLists += [Align.wordify(mean)]
+		meanWordLists += [align.wordify(mean)]
 	for peak in peaks:
 		#the closest mean, instantiated as the outlier cluster
 		scores = []
-		for j in range(len(means)):
-			(i,score) = Align.align(peak,mean)
-			scores += 
-		if max_score <= outlierThreshold:
-			group(peak, len(clusters) - 1, clusters)
-		group(peak, nearest, clusters)
+		for mean in means:
+			(i,score) = align.align(peak,mean)
+			scores += score
+		maxScore = scores[0]
+		nearest = 0
+		for j in range(1,len(scores)):
+			#How to resolve ties?
+			if scores[j] > maxScore:
+				maxScore = scores[j]
+				nearest = j
+		if maxScore <= outlierThreshold:
+			group(peak, 0, clusters)
+		else:
+			group(peak, nearest, clusters)
 	return clusters
 
 #Counts the character's contribution to the mean 
@@ -41,7 +50,8 @@ def count (character, probArray):
 		probArray[0] += 1
 	if character == C:
 		probArray[0] += 1
-	else print "Incorrect string in peaks (recentering), implement error handling"
+	else:
+		print "Incorrect string in peaks (recentering), implement error handling"
 	return
 
 #Reliant on means of the same size....
@@ -65,9 +75,9 @@ def recenter (clusters,deltaMeans):
 		for i in range(len(cluster[0])):
 			prototype += [[0,0,0,0]]
 		#calculating the distribution in bases of the mean
-		meanWords = Align.wordify(cluster[0])
+		meanWords = align.wordify(cluster[0])
 		for peak in cluster:
-			i = index_of_align(peak,meanWords)
+			i = align.index_of_align(peak,meanWords)
 			#May want to change this for extending means - when peaks flow over
 			#Currently, it just keeps the original seed length & alignment
 			for j in range(min(len(peak),(len(cluster[0]) - i))):
@@ -96,7 +106,7 @@ def extractMeans (clusters):
 def cluster (peaks, means):
 	#The total change in the means by alignment score, this should be eventually replaced
 	deltaMeans = 1001
-    clusters = []
+	clusters = []
 	while deltaMeans > allocationCessationThreshold:
 		clusters = allocate (peaks,means)
 		deltaMeans = recenter (clusters,0)
