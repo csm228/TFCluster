@@ -39,6 +39,26 @@ def kPlusPlus (means, peaks):
 			seedIndex = i
 	return (peaks.pop(seedIndex),peaks)
 
+#The matrix array of characters is a list of [probA;probT;probG;probC] lists
+def initProb (character):
+	if character == A:
+		return [1,0,0,0]
+	if character == T:
+		return [0,1,0,0]
+	if character == G:
+		return [0,0,1,0]
+	if character == C:
+		return [0,0,0,1]
+	else:
+		print "Incorrect string in peaks, implement error handling"
+
+#abstracts a peak seed into a mean
+def abstract(peak):
+	seq = peak[0]
+	matrix = []
+	for character in seq:
+		matrix += [initProb(character)]
+	return matrix
 
 # picks a subsample from peaks, 
 # then picks seed means from that by k++ w/o replacement
@@ -55,10 +75,10 @@ def pickMeans (peaks, numMeans):
 	#Now we create the list of new means
 	seeds = []
 	(seed, subSample) = sample(subSample)
-	seeds += [seed]
+	seeds += [abstract(seed)]
 	for i in range(numMeans):
 		(seed, subSample) = kPlusPlus(seeds,subSample)
-		seeds += [seed]
+		seeds += [abstract(seed)]
 	return seeds
 
 

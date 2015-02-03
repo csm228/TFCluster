@@ -8,7 +8,7 @@ highScoreThreshold = 3.0
 #Distance that two words must be under to group into a segment pair
 segPairWordMaxDist = 8
 
-#The matrix array of characters is 
+#The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def compare (character, probArray):
 	if character == A:
 		return probArray[0]
