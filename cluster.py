@@ -42,13 +42,13 @@ def allocate (peaks, means):
 #Counts the character's contribution to the mean 
 # at that position in the sequence and mean
 def count (character, probArray):
-	if character == A:
+	if character == 'A':
 		probArray[0] += 1
-	if character == T:
+	if character == 'T':
 		probArray[0] += 1
-	if character == G:
+	if character == 'G':
 		probArray[0] += 1
-	if character == C:
+	if character == 'C':
 		probArray[0] += 1
 	else:
 		print "Incorrect string in peaks (recentering), implement error handling"

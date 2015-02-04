@@ -10,13 +10,13 @@ segPairWordMaxDist = 8
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def compare (character, probArray):
-	if character == A:
+	if character == 'A':
 		return probArray[0]
-	if character == T:
+	if character == 'T':
 		return probArray[1]
-	if character == G:
+	if character == 'G':
 		return probArray[2]
-	if character == C:
+	if character == 'C':
 		return probArray[3]
 	else:
 		print "Incorrect string in peaks, implement error handling"
@@ -33,7 +33,7 @@ def scorePair (seqWord,meanWord):
 def wordify (seq):
 	seqWords = []
 	for i in range((len(seq)-wordLength)):
-		seqWords += seq[i:(i+wordLength)]
+		seqWords += [seq[i:(i+wordLength)]]
 	return seqWords
 
 #Generates an index of alignment and an alignment score
@@ -60,8 +60,8 @@ def align (peak, meanWords):
 				if (dist < segPairWordMaxDist) and (i1 - i2 + j2 == j1):
 					segScore = 0
 					for m in range(dist):
-						seqScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
-					segmentPairs += [(min(j1,j2)-min(i1,i2),seqScore)]
+						segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
+					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		if len(segmentPairs) > 0:
 			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)

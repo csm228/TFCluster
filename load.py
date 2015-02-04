@@ -7,13 +7,15 @@ def process_Generated (testData):
 	source = open(testData)
 	data = []
 	for line in source:
-		datum = line.strip().split('\t')
-		datum[0] = (str(datum[0])).upper
+		datum = (line.strip()).split('\t')
+		datum[0] = (str(datum[0])).upper()
 		datum[1] = int(datum[1])
 		datum[2] = int(datum[2])
 		datum[3] = list(datum[3])
 		#data.append(datum)
 		data += [datum]
+	#print data[0]
+	#print data[4]
 	return data
 
 #takes an ENCODE narrowPeak file and outputs a list of lists (peaks)

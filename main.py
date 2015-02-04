@@ -13,7 +13,7 @@ probabilityThreshold = .05
 def calcSubSize (numMeans, numPeaks):
 	subSize = numPeaks/10 + 1
 	return subSize
-	
+
 #Takes a random peak and removes it from the list of peaks,
 #returns (peak, remaining peaks) as a tuple
 def sample (peaks):
@@ -41,13 +41,13 @@ def kPlusPlus (means, peaks):
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
-	if character == A:
+	if character == 'A':
 		return [1,0,0,0]
-	if character == T:
+	if character == 'T':
 		return [0,1,0,0]
-	if character == G:
+	if character == 'G':
 		return [0,0,1,0]
-	if character == C:
+	if character == 'C':
 		return [0,0,0,1]
 	else:
 		print "Incorrect string in peaks, implement error handling"
@@ -71,7 +71,7 @@ def pickMeans (peaks, numMeans):
 	for x in xrange(subSampleSize):
 		(thisPeak,rest) = sample(nonReplacement)
 		nonReplacement = rest
-		subSample += thisPeak
+		subSample += [thisPeak]
 	#Now we create the list of new means
 	seeds = []
 	(seed, subSample) = sample(subSample)
@@ -115,6 +115,7 @@ def welchTest (prevClusters,currClusters):
 	(t_stat,p_val) = scipy.stats.ttest_ind(prevMeans, currMeans, equal_var = False)
 	return p_val
 
+#temporary initial step for the welch's test (?)
 def clustrifyMeans (means):
 	listifiedMeans = []
 	for i in range(len(means)):
@@ -132,6 +133,8 @@ def main (peaks):
 	#Aliasing issues? lists within lists?
 	prevClusters = list(currClusters)
 	(means,currClusters) = cluster.cluster(peaks,means)
+	#testing
+	print 'starting welch\'s t-test clustering with centroid means (2nd run)'
 	while welchTest(prevClusters,currClusters) > probabilityThreshold:
 		numNewMeans = guessNewMeans(peaks, means)
 		outliers = currClusters[0]
