@@ -134,11 +134,12 @@ def main (peaks):
 	prevClusters = list(currClusters)
 	(means,currClusters) = cluster.cluster(peaks,means)
 	#testing
-	print 'starting welch\'s t-test clustering with centroid means (2nd run)'
+	print 'starting welch\'s t-test clustering with centroid means'
 	while welchTest(prevClusters,currClusters) > probabilityThreshold:
 		numNewMeans = guessNewMeans(peaks, means)
 		outliers = currClusters[0]
 		means += pickMeans(outliers,numNewMeans)
 		prevClusters = list(currClusters)
 		(means,currClusters) = cluster.cluster(peaks,means)
+		print 'finished clustering of subsequent k guess'
 	return currClusters

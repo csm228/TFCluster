@@ -23,9 +23,9 @@ def allocate (peaks, means):
 	for peak in peaks:
 		#the closest mean, instantiated as the outlier cluster
 		scores = []
-		for mean in means:
-			(i,score) = align.align(peak,mean)
-			scores += score
+		for meanWords in meanWordLists:
+			(i,score) = align.align(peak,meanWords)
+			scores += [score]
 		maxScore = scores[0]
 		nearest = 0
 		for j in range(1,len(scores)):
@@ -81,13 +81,14 @@ def recenter (clusters,deltaMeans):
 			#May want to change this for extending means - when peaks flow over
 			#Currently, it just keeps the original seed length & alignment
 			for j in range(min(len(peak),(len(cluster[0]) - i))):
+				print str(j) + ', ' + str(i)
 				count(peak[0][j],prototype[i+j])
 		for loc in prototype:
-			count = 0
+			total = 0
 			for prob in loc:
-				count += prob
+				total += prob
 			for prob in loc:
-				prob /= count
+				prob /= total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
