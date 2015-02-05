@@ -11,7 +11,7 @@ probabilityThreshold = .05
 #def calcSubSize (k,n):
 
 def calcSubSize (numMeans, numPeaks):
-	subSize = numPeaks/10 + 1
+	subSize = numPeaks//10 + 1
 	return subSize
 
 #Takes a random peak and removes it from the list of peaks,
@@ -35,7 +35,9 @@ def kPlusPlus (means, peaks):
 	minVal = minScore(peaks[0], meanWordsList)
 	for i in range(1,len(peaks)):
 		#Bias? should this be randomized instead?
-		if minScore(peaks[i], meanWordsList) < minVal:
+		tempScore = minScore(peaks[i], meanWordsList)
+		if tempScore < minVal:
+			minVal = tempScore
 			seedIndex = i
 	return (peaks.pop(seedIndex),peaks)
 
@@ -76,7 +78,7 @@ def pickMeans (peaks, numMeans):
 	seeds = []
 	(seed, subSample) = sample(subSample)
 	seeds += [abstract(seed)]
-	for i in range(numMeans):
+	for i in range(numMeans - 1):
 		(seed, subSample) = kPlusPlus(seeds,subSample)
 		seeds += [abstract(seed)]
 	return seeds
@@ -119,7 +121,8 @@ def welchTest (prevClusters,currClusters):
 def clustrifyMeans (means):
 	listifiedMeans = []
 	for i in range(len(means)):
-		listifiedMeans += [means[i]]
+		#Double brackets, as single brackets just recostructs means
+		listifiedMeans += [[means[i]]]
 	return listifiedMeans
 
 # print a line when the variance goes back up between means

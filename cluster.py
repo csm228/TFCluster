@@ -107,8 +107,9 @@ def extractMeans (clusters):
 def cluster (peaks, means):
 	#The total change in the means by alignment score, this should be eventually replaced
 	deltaMeans = 1001
+	initDeltaMeans = 0
 	clusters = []
 	while deltaMeans > allocationCessationThreshold:
 		clusters = allocate (peaks,means)
-		deltaMeans = recenter (clusters,0)
+		deltaMeans = recenter (clusters,initDeltaMeans)
 	return (extractMeans(clusters),clusters)
