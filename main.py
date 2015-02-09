@@ -1,7 +1,12 @@
 import align
 import cluster
+
 import random
 import math
+
+import scipy
+from scipy import stats
+
 
 #The p-value to check against to stop the clustering algorithm. Change this
 probabilityThreshold = .05
@@ -11,7 +16,9 @@ probabilityThreshold = .05
 #def calcSubSize (k,n):
 
 def calcSubSize (numMeans, numPeaks):
-	subSize = numPeaks//10 + 1
+	#deal with the case where the subsample or the number of peaks left
+	#is less than the number of new guessed clusters [+5 below]
+	subSize = numPeaks//10 + 5
 	return subSize
 
 #Takes a random peak and removes it from the list of peaks,
@@ -54,6 +61,17 @@ def initProb (character):
 	else:
 		print "Incorrect string in peaks, implement error handling"
 
+# def initProb (character):
+# 	if character == 'A':
+# 		return [5,1,1,1]
+# 	if character == 'T':
+# 		return [1,5,1,1]
+# 	if character == 'G':
+# 		return [1,1,5,1]
+# 	if character == 'C':
+# 		return [1,1,1,5]
+# 	print "Incorrect string in peaks, implement error handling"
+
 #abstracts a peak seed into a mean
 def abstract(peak):
 	seq = peak[0]
@@ -91,7 +109,11 @@ def variance (cluster):
 		(index, score) = align.align(seq, cluster[0])
 		sumVar += score
 	#Integer division?
-	return (sumVar / (len(cluster) - 1))
+	#What do you do if NOTHING gets clustered with the mean?
+	if len(cluster) > 1:
+		return (sumVar / (len(cluster) - 1))
+	else:
+		return 0
 
 # returns the standard deviation of a cluster
 # measured by alignment score from the mean
@@ -107,14 +129,24 @@ def guessInitMeans(peaks):
 def guessNewMeans(peaks, means):
 	return 5
 
+# def welchTest (prevClusters,currClusters):
+# 	prevMeans = []
+# 	currMeans = []
+# 	for cluster in prevClusters[1:]:
+# 		prevMeans += [cluster[0]]
+# 	for cluster in currClusters[1:]:
+# 		currMeans += [cluster[0]]
+# 	(t_stat,p_val) = scipy.stats.ttest_ind(prevMeans, currMeans, equal_var = False)
+# 	return p_val
+
 def welchTest (prevClusters,currClusters):
-	prevMeans = []
-	currMeans = []
+	prevClusterVariances = []
+	currClusterVariances = []
 	for cluster in prevClusters[1:]:
-		prevMeans += [cluster[0]]
+		prevClusterVariances += [variance(cluster)]
 	for cluster in currClusters[1:]:
-		currMeans += [cluster[0]]
-	(t_stat,p_val) = scipy.stats.ttest_ind(prevMeans, currMeans, equal_var = False)
+		currClusterVariances += [variance(cluster)]
+	(t_stat,p_val) = scipy.stats.ttest_ind(prevClusterVariances, currClusterVariances, equal_var = False)
 	return p_val
 
 #temporary initial step for the welch's test (?)
@@ -123,6 +155,7 @@ def clustrifyMeans (means):
 	for i in range(len(means)):
 		#Double brackets, as single brackets just recostructs means
 		listifiedMeans += [[means[i]]]
+	# print listifiedMeans[0]
 	return listifiedMeans
 
 # print a line when the variance goes back up between means
@@ -130,11 +163,13 @@ def clustrifyMeans (means):
 def main (peaks):
 	prevClusters = []
 	means = pickMeans(peaks,guessInitMeans(peaks))
+	print means[0]
 	#The extra list at the beginning is for outliers,
 	#and is initialized with all peaks
 	currClusters = [peaks] + clustrifyMeans(means)
 	#Aliasing issues? lists within lists?
 	prevClusters = list(currClusters)
+	print 'first runthrough of clustering'
 	(means,currClusters) = cluster.cluster(peaks,means)
 	#testing
 	print 'starting welch\'s t-test clustering with centroid means'
@@ -145,4 +180,5 @@ def main (peaks):
 		prevClusters = list(currClusters)
 		(means,currClusters) = cluster.cluster(peaks,means)
 		print 'finished clustering of subsequent k guess'
+	print 
 	return currClusters

@@ -3,7 +3,7 @@
 def peakWriter(peak, outfile):
 	sequence = peak[0]
 	#line = footprint + '\t' + str(position) + '\t' + str(motif_start) + '\t' + str(seed) +'\n' (from input)
-	line = sequence + '\n'
+	line = str(sequence) + '\n'
 	outfile.write(line)
 
 # write clusters to output file

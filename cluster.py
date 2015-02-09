@@ -45,11 +45,11 @@ def count (character, probArray):
 	if character == 'A':
 		probArray[0] += 1
 	if character == 'T':
-		probArray[0] += 1
+		probArray[1] += 1
 	if character == 'G':
-		probArray[0] += 1
+		probArray[2] += 1
 	if character == 'C':
-		probArray[0] += 1
+		probArray[3] += 1
 	else:
 		print "Incorrect string in peaks (recentering), implement error handling"
 	return
@@ -76,7 +76,8 @@ def recenter (clusters,deltaMeans):
 			prototype += [[0,0,0,0]]
 		#calculating the distribution in bases of the mean
 		meanWords = align.wordify(cluster[0])
-		for peak in cluster:
+		for peak in cluster[1:]:
+			#MEMOIZE THE HECK OUT OF THIS PLEASE
 			i = align.index_of_align(peak,meanWords)
 			#May want to change this for extending means - when peaks flow over
 			#Currently, it just keeps the original seed length & alignment
@@ -86,9 +87,13 @@ def recenter (clusters,deltaMeans):
 		for loc in prototype:
 			total = 0
 			for prob in loc:
+				print prob
 				total += prob
-			for prob in loc:
-				prob /= total
+			#should there ever be a mean without peaks? I don't think so
+			if total != 0:
+				for prob in loc:
+					print total
+					prob /= total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
@@ -109,7 +114,9 @@ def cluster (peaks, means):
 	deltaMeans = 1001
 	initDeltaMeans = 0
 	clusters = []
+	print means[0]
 	while deltaMeans > allocationCessationThreshold:
 		clusters = allocate (peaks,means)
+		print clusters[1][0]
 		deltaMeans = recenter (clusters,initDeltaMeans)
 	return (extractMeans(clusters),clusters)
