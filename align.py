@@ -37,7 +37,8 @@ def wordify (seq):
 	return seqWords
 
 #Generates an index of alignment and an alignment score
-# in the form (index, score) where the index is the .....
+# in the form (index, score)
+# where the index is the displacement of the peak sequence from the mean
 def align (peak, meanWords):
 	seqWords = wordify(peak[0])
 	scoreMatrix = []
@@ -70,8 +71,8 @@ def align (peak, meanWords):
 						print segScore
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
-		print segmentPairs[0]
-		print 'segpair^\n'
+		# print segmentPairs[0]
+		# print 'segpair^\n'
 		if len(segmentPairs) > 0:
 			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)
 			return segmentPairs[0]

@@ -24,8 +24,8 @@ def allocate (peaks, means):
 		#the closest mean, instantiated as the outlier cluster
 		scores = []
 		for meanWords in meanWordLists:
-			(i,score) = align.align(peak,meanWords)
-			scores += [score]
+			# (i,score) = align.align(peak,meanWords)
+			scores += [align.score_of_align(peak,meanWords)]
 		maxScore = scores[0]
 		nearest = 0
 		for j in range(1,len(scores)):
@@ -42,7 +42,6 @@ def allocate (peaks, means):
 #Counts the character's contribution to the mean 
 # at that position in the sequence and mean
 def count (character, probArray):
-	print character
 	if character == 'A':
 		probArray[0] += 1
 	elif character == 'T':
@@ -77,16 +76,18 @@ def recenter (clusters,deltaMeans):
 			prototype += [[0,0,0,0]]
 		#calculating the distribution in bases of the mean
 		meanWords = align.wordify(cluster[0])
+		meanLength = len(cluster[0])
 		for peak in cluster[1:]:
 			#MEMOIZE THE HECK OUT OF THIS PLEASE
 			i = align.index_of_align(peak,meanWords)
 			#May want to change this for extending means - when peaks flow over
 			#Currently, it just keeps the original seed length & alignment
-			for j in range(min(len(peak),(len(cluster[0]) - i))):
-				print str(j) + ', ' + str(i)
-				print prototype[i+j]
-				count(peak[0][j],prototype[i+j])
-				print prototype[i+j]
+			#ALSO, accounts for alignments prior to the beginning of the mean,
+			# or flowing over the end
+			for j in range(max(0,-i),min(len(peak[0]),meanLength - i))):
+				print prototype[j]
+				count(peak[0][i+j],prototype[j])
+				print prototype[j]
 		for loc in prototype:
 			total = 0
 			for prob in loc:
