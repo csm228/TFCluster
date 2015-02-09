@@ -52,11 +52,11 @@ def kPlusPlus (means, peaks):
 def initProb (character):
 	if character == 'A':
 		return [1,0,0,0]
-	if character == 'T':
+	elif character == 'T':
 		return [0,1,0,0]
-	if character == 'G':
+	elif character == 'G':
 		return [0,0,1,0]
-	if character == 'C':
+	elif character == 'C':
 		return [0,0,0,1]
 	else:
 		print "Incorrect string in peaks, implement error handling"
@@ -64,11 +64,11 @@ def initProb (character):
 # def initProb (character):
 # 	if character == 'A':
 # 		return [5,1,1,1]
-# 	if character == 'T':
+# 	elif character == 'T':
 # 		return [1,5,1,1]
-# 	if character == 'G':
+# 	elif character == 'G':
 # 		return [1,1,5,1]
-# 	if character == 'C':
+# 	elif character == 'C':
 # 		return [1,1,1,5]
 # 	print "Incorrect string in peaks, implement error handling"
 
@@ -129,16 +129,6 @@ def guessInitMeans(peaks):
 def guessNewMeans(peaks, means):
 	return 5
 
-# def welchTest (prevClusters,currClusters):
-# 	prevMeans = []
-# 	currMeans = []
-# 	for cluster in prevClusters[1:]:
-# 		prevMeans += [cluster[0]]
-# 	for cluster in currClusters[1:]:
-# 		currMeans += [cluster[0]]
-# 	(t_stat,p_val) = scipy.stats.ttest_ind(prevMeans, currMeans, equal_var = False)
-# 	return p_val
-
 def welchTest (prevClusters,currClusters):
 	prevClusterVariances = []
 	currClusterVariances = []
@@ -171,7 +161,6 @@ def main (peaks):
 	prevClusters = list(currClusters)
 	print 'first runthrough of clustering'
 	(means,currClusters) = cluster.cluster(peaks,means)
-	#testing
 	print 'starting welch\'s t-test clustering with centroid means'
 	while welchTest(prevClusters,currClusters) > probabilityThreshold:
 		numNewMeans = guessNewMeans(peaks, means)

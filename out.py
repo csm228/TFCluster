@@ -7,8 +7,7 @@ def meanWriter(mean, outfile):
 # write individual peaks
 def peakWriter(peak, outfile):
 	sequence = peak[0]
-	#line = footprint + '\t' + str(position) + '\t' + str(motif_start) + '\t' + str(seed) +'\n' (from input)
-	line = str(sequence) + '\n'
+	line = sequence + '\n'
 	outfile.write(line)
 
 # write clusters to output file

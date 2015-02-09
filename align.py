@@ -10,14 +10,13 @@ segPairWordMaxDist = 8
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def compare (character, probArray):
-	print character
 	if character == 'A':
 		return probArray[0]
-	if character == 'T':
+	elif character == 'T':
 		return probArray[1]
-	if character == 'G':
+	elif character == 'G':
 		return probArray[2]
-	if character == 'C':
+	elif character == 'C':
 		return probArray[3]
 	else:
 		print "Incorrect string in peaks, implement error handling"
@@ -50,7 +49,8 @@ def align (peak, meanWords):
 			if score > highScoreThreshold:
 				highScoreWords += [(score,i,j)]
 		scoreMatrix += [scores]
-	# print highScoreWords[0]
+	print highScoreWords[0]
+	print scoreMatrix
 	if len(highScoreWords) > 0:
 		segmentPairs = []
 		for k in range(len(highScoreWords)):
@@ -69,6 +69,7 @@ def align (peak, meanWords):
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		print segmentPairs[0]
+		print 'segpair^\n'
 		if len(segmentPairs) > 0:
 			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)
 			return segmentPairs[0]
