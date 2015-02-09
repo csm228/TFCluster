@@ -42,6 +42,8 @@ def allocate (peaks, means):
 #Counts the character's contribution to the mean 
 # at that position in the sequence and mean
 def count (character, probArray):
+	print character
+	character = str(character)
 	if character == 'A':
 		probArray[0] += 1
 	if character == 'T':
@@ -83,16 +85,18 @@ def recenter (clusters,deltaMeans):
 			#Currently, it just keeps the original seed length & alignment
 			for j in range(min(len(peak),(len(cluster[0]) - i))):
 				print str(j) + ', ' + str(i)
+				print prototype[i+j]
 				count(peak[0][j],prototype[i+j])
+				print prototype[i+j]
 		for loc in prototype:
 			total = 0
 			for prob in loc:
-				print prob
+				# print prob
 				total += prob
 			#should there ever be a mean without peaks? I don't think so
 			if total != 0:
 				for prob in loc:
-					print total
+					# print total
 					prob /= total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 

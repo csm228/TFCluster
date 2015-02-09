@@ -3,13 +3,14 @@
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words
-highScoreThreshold = 0
+highScoreThreshold = 3
 
 #Distance that two words must be under to group into a segment pair
 segPairWordMaxDist = 8
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def compare (character, probArray):
+	print character
 	if character == 'A':
 		return probArray[0]
 	if character == 'T':
@@ -49,12 +50,16 @@ def align (peak, meanWords):
 			if score > highScoreThreshold:
 				highScoreWords += [(score,i,j)]
 		scoreMatrix += [scores]
+	# print highScoreWords[0]
 	if len(highScoreWords) > 0:
 		segmentPairs = []
 		for k in range(len(highScoreWords)):
 			(score1,i1,j1) = highScoreWords[k]
 			for l in range(len(highScoreWords) - k):
-				(score2,i2,j2) = highScoreWords[k]
+				print highScoreWords[k]
+				print highScoreWords[l]
+				print '\n'
+				(score2,i2,j2) = highScoreWords[l]
 				#Second high-scoring word must be close enough, on the same alignment
 				dist = abs(i1-i2)
 				if (dist < segPairWordMaxDist) and (i1 - i2 + j2 == j1):
@@ -63,6 +68,7 @@ def align (peak, meanWords):
 						segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
+		print segmentPairs[0]
 		if len(segmentPairs) > 0:
 			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)
 			return segmentPairs[0]
