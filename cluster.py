@@ -84,10 +84,10 @@ def recenter (clusters,deltaMeans):
 			#Currently, it just keeps the original seed length & alignment
 			#ALSO, accounts for alignments prior to the beginning of the mean,
 			# or flowing over the end
-			for j in range(max(0,-i),min(len(peak[0]) + i, meanLength - i)):
-				print prototype[j]
-				count(peak[0][i+j],prototype[j])
-				print prototype[j]
+			for j in range(max(0,-i),min(len(peak[0]), meanLength - i)):
+				print prototype[j+i]
+				count(peak[0][j],prototype[j+i])
+				print prototype[j+i]
 		for loc in prototype:
 			total = 0
 			for prob in loc:

@@ -1,4 +1,4 @@
-#For the purpose of writing test scripts
+# For the purpose of writing test scripts
 # USE: python testing.py <input file location> <output file location>
 # OUTPUT: Footprint sequence, sequence position(number), motif start position, Seed info (list)
 import sys

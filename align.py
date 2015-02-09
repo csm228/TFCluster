@@ -68,7 +68,8 @@ def align (peak, meanWords):
 					segScore = 0
 					for m in range(dist):
 						segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
-						print segScore
+					# 	print segScore
+					# print '\n'
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		# print segmentPairs[0]
