@@ -3,7 +3,7 @@
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words
-highScoreThreshold = 1
+highScoreThreshold = 0
 
 #Distance that two words must be under to group into a segment pair
 segPairWordMaxDist = 8
@@ -72,8 +72,8 @@ def align (peak, meanWords):
 	return (0,0)
 
 
-def align_mean (peak, mean):
-	return align(peak, wordify(mean))
+# def align_mean (peak, mean):
+# 	return align(peak, wordify(mean))
 
 #kinda sad functions, just left them in, used in cluster.py
 def index_of_align(peak, meanWords):

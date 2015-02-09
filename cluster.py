@@ -99,7 +99,7 @@ def recenter (clusters,deltaMeans):
 		# the seed will always have high change
 		deltaMeans += difference(cluster[0],prototype)
 		cluster[0] = prototype
-		return deltaMeans
+	return deltaMeans
 
 #to extract the means so that they can be given back to main
 def extractMeans (clusters):
