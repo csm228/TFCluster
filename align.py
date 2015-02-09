@@ -37,6 +37,7 @@ def wordify (seq):
 	return seqWords
 
 #Generates an index of alignment and an alignment score
+# in the form (index, score) where the index is the .....
 def align (peak, meanWords):
 	seqWords = wordify(peak[0])
 	scoreMatrix = []
@@ -49,16 +50,16 @@ def align (peak, meanWords):
 			if score > highScoreThreshold:
 				highScoreWords += [(score,i,j)]
 		scoreMatrix += [scores]
-	print highScoreWords[0]
-	print scoreMatrix
+	# print highScoreWords[0]
+	# print scoreMatrix
 	if len(highScoreWords) > 0:
 		segmentPairs = []
 		for k in range(len(highScoreWords)):
 			(score1,i1,j1) = highScoreWords[k]
-			for l in range(len(highScoreWords) - k):
-				print highScoreWords[k]
-				print highScoreWords[l]
-				print '\n'
+			for l in range(k + 1,len(highScoreWords)):
+				# print highScoreWords[k]
+				# print highScoreWords[l]
+				# print '\n'
 				(score2,i2,j2) = highScoreWords[l]
 				#Second high-scoring word must be close enough, on the same alignment
 				dist = abs(i1-i2)
@@ -66,6 +67,7 @@ def align (peak, meanWords):
 					segScore = 0
 					for m in range(dist):
 						segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
+						print segScore
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		print segmentPairs[0]

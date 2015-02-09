@@ -105,10 +105,10 @@ def pickMeans (peaks, numMeans):
 # try storing prev. cluster variance? - in main
 def variance (cluster):
 	sumVar = 0
+	meanWords = align.wordify(cluster[0])
 	for seq in cluster[1:]:
-		(index, score) = align.align(seq, cluster[0])
-		sumVar += score
-	#Integer division?
+		sumVar += align.score_of_align(seq, meanWords)
+	#Integer division is // while / does floating point
 	#What do you do if NOTHING gets clustered with the mean?
 	if len(cluster) > 1:
 		return (sumVar / (len(cluster) - 1))
@@ -169,5 +169,4 @@ def main (peaks):
 		prevClusters = list(currClusters)
 		(means,currClusters) = cluster.cluster(peaks,means)
 		print 'finished clustering of subsequent k guess'
-	print 
 	return currClusters
