@@ -84,7 +84,7 @@ def recenter (clusters,deltaMeans):
 			#Currently, it just keeps the original seed length & alignment
 			#ALSO, accounts for alignments prior to the beginning of the mean,
 			# or flowing over the end
-			for j in range(max(0,-i),min(len(peak[0]),meanLength - i))):
+			for j in range(max(0,-i),min(len(peak[0]) + i, meanLength - i)):
 				print prototype[j]
 				count(peak[0][i+j],prototype[j])
 				print prototype[j]
@@ -109,7 +109,7 @@ def recenter (clusters,deltaMeans):
 def extractMeans (clusters):
 	means = []
 	for cluster in clusters[1:]:
-		means += cluster[0]
+		means += [cluster[0]]
 	return means
 
 #The k-means clustering algorithm, managing the termination of the 
