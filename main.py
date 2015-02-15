@@ -49,28 +49,29 @@ def kPlusPlus (means, peaks):
 	return (peaks.pop(seedIndex),peaks)
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
-def initProb (character):
-	if character == 'A':
-		return [1,0,0,0]
-	elif character == 'T':
-		return [0,1,0,0]
-	elif character == 'G':
-		return [0,0,1,0]
-	elif character == 'C':
-		return [0,0,0,1]
-	else:
-		print "Incorrect string in peaks, implement error handling"
-
 # def initProb (character):
 # 	if character == 'A':
-# 		return [5,1,1,1]
+# 		return [1,0,0,0]
 # 	elif character == 'T':
-# 		return [1,5,1,1]
+# 		return [0,1,0,0]
 # 	elif character == 'G':
-# 		return [1,1,5,1]
+# 		return [0,0,1,0]
 # 	elif character == 'C':
-# 		return [1,1,1,5]
-# 	print "Incorrect string in peaks, implement error handling"
+# 		return [0,0,0,1]
+# 	else:
+# 		print "Incorrect string in peaks, implement error handling"
+
+#This rearrangement of seed generation may reduce mean locations with [0,0,0,0]
+def initProb (character):
+	if character == 'A':
+		return [5,1,1,1]
+	elif character == 'T':
+		return [1,5,1,1]
+	elif character == 'G':
+		return [1,1,5,1]
+	elif character == 'C':
+		return [1,1,1,5]
+	print "Incorrect string in peaks, implement error handling"
 
 #abstracts a peak seed into a mean
 def abstract(peak):
@@ -153,7 +154,8 @@ def clustrifyMeans (means):
 def main (peaks):
 	prevClusters = []
 	means = pickMeans(peaks,guessInitMeans(peaks))
-	print means[0]
+	print peaks[0]
+	# print means[0]
 	#The extra list at the beginning is for outliers,
 	#and is initialized with all peaks
 	currClusters = [peaks] + clustrifyMeans(means)

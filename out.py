@@ -9,7 +9,7 @@ def peakWriter(peak, outfile):
 	sequence = peak[0]
 	index = peak[2]
 	motif = peak[3][1]
-	line = sequence + '\t' + index + '\t' + motif + '\n'
+	line = sequence + '\t' + str(index) + '\t' + motif + '\n'
 	outfile.write(line)
 
 # write clusters to output file

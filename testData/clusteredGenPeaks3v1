@@ -1,0 +1,42 @@
+Putative Outliers
+TATGGCAGTAAGGCGTTTCCTCGGACAGTCTGTCG	1	TAGTCA
+ACTCTGACCAGTCTGTTAGTTATTGGAGGCAGACTTGATTGCATATCATA	14	TTTTTTGCTTGGAG
+CTTCGATTAGTCGTATTAAACTTTATCGAATAGCAAAGGATCGC	7	TAGTCA
+GCAGAATCTGATCTTGTCAGTCAACCTTT	17	TAGTCA
+
+Cluster 1
+[[1, 0, 0, 3], [1, 0, 1, 2], [1, 1, 1, 1], [3, 0, 1, 0], [0, 1, 2, 1], [0, 1, 1, 2], [1, 1, 1, 1], [0, 0, 3, 2], [1, 3, 0, 1], [3, 2, 0, 1], [3, 0, 1, 2], [2, 1, 1, 2], [2, 1, 3, 0], [1, 1, 1, 3], [0, 1, 3, 2], [0, 1, 2, 3], [2, 2, 1, 1], [2, 1, 1, 2], [2, 1, 1, 1], [0, 2, 2, 1], [2, 1, 1, 1], [1, 2, 1, 1], [0, 1, 1, 2], [1, 0, 3, 0], [1, 1, 0, 2], [2, 0, 0, 2], [3, 0, 0, 1], [0, 1, 1, 2], [0, 0, 1, 3], [2, 0, 0, 2], [2, 0, 1, 1], [1, 3, 0, 0], [0, 2, 1, 1], [1, 1, 2, 0], [0, 0, 1, 3]]
+CGAAGCAGTAAAACCCTGAGCATATACTCAGTTACTGA	28	TAGTCA
+GCAAAACACTGGCCCAACTAGCCATTTGG	3	AACCACTGGCCTAAC
+CAGATGGCTTGATCTGCCGGTCCGACACGCAATTGGATTAGTCAAGTT	38	TAGTCA
+TCGGAGTTACCATGGCAACCACTGGCCCACCTACTC	16	AACCACTGGCCTAAC
+GCCACGTGCAAATATCGCCAGCCATCGCCTCATTGCCTTCTGGAGTGCAGA	11	ATCACGCC
+GCTGGAAAACACCGCAGTCCCACTTGTAACGCGGGC	5	ATCACGCC
+
+Cluster 2
+[[0, 3, 0, 0], [1, 1, 0, 1], [0, 0, 2, 1], [0, 2, 1, 0], [3, 0, 0, 0], [0, 1, 3, 0], [0, 2, 2, 0], [1, 1, 2, 0], [2, 0, 0, 3], [0, 3, 1, 1], [0, 0, 4, 1], [3, 1, 1, 0], [1, 1, 3, 0], [1, 0, 1, 2], [0, 1, 1, 2], [1, 1, 1, 1], [2, 1, 1, 0], [0, 2, 0, 2], [0, 2, 2, 0], [4, 1, 0, 0], [1, 0, 4, 0], [0, 2, 0, 3], [0, 1, 0, 4], [4, 1, 0, 0], [0, 4, 0, 1], [1, 3, 0, 1], [1, 2, 2, 0], [0, 3, 2, 0], [1, 1, 1, 2]]
+GGGCCCAGGGGATGAACCATTTTCGCTTGGAGACCGACTGTGCT	18	TTTTTTGCTTGGAG
+GCTACTAGTGAGGAGCCAACTTGTTATTGGTTGGAGGT	22	TTTTTTGCTTGGAG
+AGCCTTTTTCGCTTGGCGGTTAGGGCGTTGGAATGTCCGAGTGCCTAAGA	4	TTTTTTGCTTGGAG
+ATGTAACTGCTAGTCATCATATGCTTTCGTGCTTGGAGGCTGA	24	TTTTTTGCTTGGAG
+TTGAGCCACAGGGCTATGCATAATA	3	AACCACTGGCCTAAC
+GAATACGTGGATCATATGTATCGCTTGGAGGTCTGGGCTC	16	TTTTTTGCTTGGAG
+TTACCAGATCAATGTGTTTGTGCTTGGAGAATCGTATTACTGAT	15	TTTTTTGCTTGGAG
+
+Cluster 3
+[[1, 0, 1, 3], [1, 0, 1, 3], [2, 2, 1, 0], [0, 2, 0, 3], [4, 0, 1, 0], [2, 2, 0, 1], [0, 2, 3, 0], [2, 2, 1, 0], [0, 2, 2, 1], [1, 0, 1, 3], [3, 0, 1, 1], [1, 3, 1, 0], [0, 1, 0, 4], [0, 0, 4, 2], [2, 1, 3, 0], [2, 1, 1, 2], [1, 1, 1, 3], [2, 1, 2, 1], [2, 2, 0, 2], [0, 1, 3, 2], [2, 2, 1, 1], [0, 2, 1, 3], [0, 2, 2, 0], [1, 0, 1, 2], [0, 2, 1, 1], [1, 2, 0, 1], [0, 2, 1, 1], [1, 1, 0, 1], [0, 0, 1, 1], [0, 0, 2, 0], [1, 0, 1, 0], [1, 1, 0, 0], [1, 0, 0, 1], [0, 2, 0, 0], [1, 1, 0, 0], [0, 0, 2, 0], [0, 0, 1, 1], [0, 1, 1, 0], [0, 1, 0, 1], [0, 1, 0, 1]]
+CCGATTCGGCATGGCGCTCGAACTCCGTTAGCGACGGTCTAGGGCCTGTTATGGG	28	TAGCGAAGACCTAG
+CCGAAAGCCGCCATAATAGCGACGGTCCAGTCGCCTT	16	TAGCGAAGACCTAG
+GTATGTGTCTGTATTGGAAATTGCTTTCTAATAGTCAA	31	TAGTCA
+AGGGTACACACGAGCAGCGGCAGTCAG	20	TAGTCA
+TGGTCGTGAGGCAATCTCGCCCTCGTTTTCATTCGCCACTACGCTTCC	13	ATCACGCC
+ACTGCAGGGTATGATTAAGTTAATCCAGGAAGCT	20	TAGTCA
+
+Cluster 4
+[[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [1, 0, 1, 0], [0, 0, 2, 0], [0, 0, 0, 2], [0, 2, 0, 0], [0, 1, 0, 1], [1, 0, 1, 0], [0, 0, 1, 1], [0, 0, 0, 2], [1, 1, 0, 0], [0, 0, 1, 1], [0, 0, 1, 1], [0, 0, 0, 2], [1, 0, 0, 1], [0, 1, 1, 0], [2, 0, 0, 0], [1, 0, 0, 1], [0, 1, 1, 0], [1, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 1], [1, 0, 0, 1], [1, 1, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [1, 0, 0, 0], [0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]]
+CTAATACGTCCGATGTCCCAGAGAGCCACTGGCTTAGCAGCCCTAAGCGGCT	23	AACCACTGGCCTAAC
+AGCTCGCCTCGCAGACTACCAAGTTTGGTCATATAGACCGTT	0	ATCACGCC
+
+Cluster 5
+[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+

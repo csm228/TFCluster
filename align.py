@@ -86,7 +86,8 @@ def align (peak, meanWords):
 # def align_mean (peak, mean):
 # 	return align(peak, wordify(mean))
 
-#kinda sad functions, just left them in, used in cluster.py
+#kinda sad functions, index is only used in recentering,
+# and only the score is used everywhere else: so separate them entirely?
 def index_of_align(peak, meanWords):
 	(i,score) = align(peak,meanWords)
 	return i
@@ -94,3 +95,16 @@ def index_of_align(peak, meanWords):
 def score_of_align(peak, meanWords):
 	(i,score) = align(peak,meanWords)
 	return score
+
+def generate_align_matrix(peaks,means):
+	meanWordsList = []
+	for mean in means:
+		meanWordsList += [wordify(mean)]
+	alignmentMatrix = []
+	for i in range(len(peaks)):
+		peak = peaks[i]
+		peakAlignments = []
+		for j in range(len(means)):
+			peakAlignments += [align(peak,meanWordsList[j])]
+		alignmentMatrix += [peakAlignments]
+	return alignmentMatrix

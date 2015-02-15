@@ -1,6 +1,6 @@
+import ast
 
-#For the import, guarantee uppercase in peak strings,
-#for the compare function of align
+#For the comparison during alignment, ensure uppercase in peak strings
 
 #takes a generated test data file and outputs a list of peaks (lists)
 def process_Generated (testData):
@@ -11,7 +11,8 @@ def process_Generated (testData):
 		datum[0] = (str(datum[0])).upper()
 		datum[1] = int(datum[1])
 		datum[2] = int(datum[2])
-		datum[3] = list(datum[3])
+		datum[3] = ast.literal_eval(datum[3])
+		# datum[3] = [e.strip() for e in datum[3]]
 		#data.append(datum)
 		data += [datum]
 	#print data[0]
