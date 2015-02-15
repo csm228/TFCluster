@@ -1,42 +1,42 @@
 Putative Outliers
-TATGGCAGTAAGGCGTTTCCTCGGACAGTCTGTCG	1	TAGTCA
-GAATACGTGGATCATATGTATCGCTTGGAGGTCTGGGCTC	16	TTTTTTGCTTGGAG
-TTACCAGATCAATGTGTTTGTGCTTGGAGAATCGTATTACTGAT	15	TTTTTTGCTTGGAG
 
 Cluster 1
-[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+[[2, 0, 1, 1], [0, 0, 2, 2], [0, 1, 0, 3], [0, 0, 1, 3], [0, 2, 0, 2], [3, 0, 1, 1], [1, 0, 4, 0], [0, 0, 4, 1], [1, 0, 3, 1], [1, 2, 2, 0], [4, 1, 0, 0], [1, 2, 0, 2], [1, 2, 2, 0], [4, 0, 0, 1], [2, 1, 0, 2], [0, 2, 0, 3], [2, 0, 1, 2], [5, 0, 0, 0], [0, 1, 4, 0], [0, 4, 0, 1], [1, 4, 0, 0], [2, 2, 1, 0], [1, 0, 1, 3], [0, 2, 3, 0], [0, 1, 2, 2], [1, 1, 0, 3], [3, 1, 0, 0], [0, 1, 3, 0], [1, 1, 2, 0], [2, 1, 0, 1], [3, 0, 1, 0], [1, 0, 3, 0], [1, 0, 0, 2], [0, 1, 0, 2]]
+CGAAGCAGTAAAACCCTGAGCATATACTCAGTTACTGA	28	TAGTCA
+GGGCCCAGGGGATGAACCATTTTCGCTTGGAGACCGACTGTGCT	18	TTTTTTGCTTGGAG
+AGGGTACACACGAGCAGCGGCAGTCAG	20	TAGTCA
+ACTGCAGGGTATGATTAAGTTAATCCAGGAAGCT	20	TAGTCA
+AGCTCGCCTCGCAGACTACCAAGTTTGGTCATATAGACCGTT	0	ATCACGCC
 
 Cluster 2
-[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 2, 0], [2, 0, 0, 0], [2, 0, 0, 0], [1, 1, 0, 0], [1, 0, 1, 0], [0, 0, 0, 2], [0, 0, 1, 1], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 1, 1], [2, 0, 0, 0], [0, 2, 0, 0], [1, 0, 0, 1], [2, 0, 0, 0], [0, 2, 0, 0], [2, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 1, 1, 0], [2, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 1], [0, 0, 2, 0], [0, 1, 0, 1], [0, 1, 0, 1]]
+CCGAAAGCCGCCATAATAGCGACGGTCCAGTCGCCTT	16	TAGCGAAGACCTAG
+GAATACGTGGATCATATGTATCGCTTGGAGGTCTGGGCTC	16	TTTTTTGCTTGGAG
 
 Cluster 3
-[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-
-Cluster 4
-[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-
-Cluster 5
-[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-CGAAGCAGTAAAACCCTGAGCATATACTCAGTTACTGA	28	TAGTCA
+[[0, 1, 4, 0], [1, 1, 1, 2], [1, 0, 2, 2], [5, 0, 0, 0], [3, 0, 3, 0], [1, 1, 0, 4], [0, 0, 1, 5], [5, 1, 0, 0], [1, 1, 0, 4], [2, 3, 0, 1], [0, 0, 5, 1], [0, 1, 4, 1], [0, 0, 2, 4], [0, 2, 0, 4], [0, 3, 0, 3], [6, 0, 0, 0], [1, 2, 2, 1], [0, 2, 1, 3], [1, 2, 1, 2], [4, 0, 1, 1], [0, 2, 1, 3], [1, 2, 0, 3], [2, 1, 0, 3], [1, 3, 0, 1], [3, 2, 0, 0]]
 GCAAAACACTGGCCCAACTAGCCATTTGG	3	AACCACTGGCCTAAC
-GGGCCCAGGGGATGAACCATTTTCGCTTGGAGACCGACTGTGCT	18	TTTTTTGCTTGGAG
-CAGATGGCTTGATCTGCCGGTCCGACACGCAATTGGATTAGTCAAGTT	38	TAGTCA
-CCGATTCGGCATGGCGCTCGAACTCCGTTAGCGACGGTCTAGGGCCTGTTATGGG	28	TAGCGAAGACCTAG
-CCGAAAGCCGCCATAATAGCGACGGTCCAGTCGCCTT	16	TAGCGAAGACCTAG
 CTAATACGTCCGATGTCCCAGAGAGCCACTGGCTTAGCAGCCCTAAGCGGCT	23	AACCACTGGCCTAAC
-GTATGTGTCTGTATTGGAAATTGCTTTCTAATAGTCAA	31	TAGTCA
-GCTACTAGTGAGGAGCCAACTTGTTATTGGTTGGAGGT	22	TTTTTTGCTTGGAG
-AGGGTACACACGAGCAGCGGCAGTCAG	20	TAGTCA
-AGCCTTTTTCGCTTGGCGGTTAGGGCGTTGGAATGTCCGAGTGCCTAAGA	4	TTTTTTGCTTGGAG
-TGGTCGTGAGGCAATCTCGCCCTCGTTTTCATTCGCCACTACGCTTCC	13	ATCACGCC
 ATGTAACTGCTAGTCATCATATGCTTTCGTGCTTGGAGGCTGA	24	TTTTTTGCTTGGAG
 TCGGAGTTACCATGGCAACCACTGGCCCACCTACTC	16	AACCACTGGCCTAAC
 GCCACGTGCAAATATCGCCAGCCATCGCCTCATTGCCTTCTGGAGTGCAGA	11	ATCACGCC
 TTGAGCCACAGGGCTATGCATAATA	3	AACCACTGGCCTAAC
-ACTGCAGGGTATGATTAAGTTAATCCAGGAAGCT	20	TAGTCA
+
+Cluster 4
+[[3, 2, 2, 1], [1, 3, 2, 2], [1, 4, 3, 1], [0, 5, 2, 2], [1, 2, 5, 2], [2, 3, 3, 3], [2, 7, 1, 1], [0, 7, 3, 1], [9, 1, 0, 1], [2, 6, 2, 1], [0, 11, 0, 0], [0, 0, 3, 8], [1, 1, 9, 0], [3, 3, 3, 2], [5, 2, 2, 2], [3, 5, 2, 1], [1, 5, 2, 3], [4, 3, 3, 0], [2, 2, 4, 2], [2, 1, 3, 4], [0, 4, 4, 2], [1, 4, 1, 3], [1, 8, 0, 0], [1, 2, 2, 3], [2, 2, 3, 1], [2, 2, 1, 2], [3, 1, 1, 1], [1, 1, 2, 2], [2, 1, 1, 2], [2, 1, 1, 2], [0, 5, 0, 1], [2, 1, 2, 1], [1, 3, 2, 0], [2, 1, 0, 2], [4, 0, 0, 0], [1, 2, 1, 0], [2, 0, 1, 1], [0, 1, 2, 0], [1, 0, 1, 1], [1, 0, 0, 2], [0, 1, 2, 0], [1, 0, 1, 1], [0, 1, 2, 0], [0, 1, 0, 2]]
+CAGATGGCTTGATCTGCCGGTCCGACACGCAATTGGATTAGTCAAGTT	38	TAGTCA
+CCGATTCGGCATGGCGCTCGAACTCCGTTAGCGACGGTCTAGGGCCTGTTATGGG	28	TAGCGAAGACCTAG
+TATGGCAGTAAGGCGTTTCCTCGGACAGTCTGTCG	1	TAGTCA
+GTATGTGTCTGTATTGGAAATTGCTTTCTAATAGTCAA	31	TAGTCA
+GCTACTAGTGAGGAGCCAACTTGTTATTGGTTGGAGGT	22	TTTTTTGCTTGGAG
+AGCCTTTTTCGCTTGGCGGTTAGGGCGTTGGAATGTCCGAGTGCCTAAGA	4	TTTTTTGCTTGGAG
+TGGTCGTGAGGCAATCTCGCCCTCGTTTTCATTCGCCACTACGCTTCC	13	ATCACGCC
 ACTCTGACCAGTCTGTTAGTTATTGGAGGCAGACTTGATTGCATATCATA	14	TTTTTTGCTTGGAG
 CTTCGATTAGTCGTATTAAACTTTATCGAATAGCAAAGGATCGC	7	TAGTCA
-GCTGGAAAACACCGCAGTCCCACTTGTAACGCGGGC	5	ATCACGCC
-AGCTCGCCTCGCAGACTACCAAGTTTGGTCATATAGACCGTT	0	ATCACGCC
+TTACCAGATCAATGTGTTTGTGCTTGGAGAATCGTATTACTGAT	15	TTTTTTGCTTGGAG
 GCAGAATCTGATCTTGTCAGTCAACCTTT	17	TAGTCA
+
+Cluster 5
+[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+GCTGGAAAACACCGCAGTCCCACTTGTAACGCGGGC	5	ATCACGCC
 
