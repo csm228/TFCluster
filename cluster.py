@@ -5,7 +5,7 @@ import align
 outlierThreshold = 0
 
 #This needs to scale with input size/characteristics
-allocationCessationThreshold = 1000
+allocationCessationThreshold = 500
 
 #In case the datatype changes, or we want to
 #remember the cluster of the peak by storing it in the peak
@@ -40,16 +40,18 @@ def count (character, probArray):
 
 #Subfunction for adding a peak to the prototypical mean PARING NEEDED
 def account(peak, prototype, i):
-	for j in range(max(0,-i),min(len(peak[0]), len(mean) - i)):
-		print prototype[j+i]
+	for j in range(max(0,-i),min(len(peak[0]), len(prototype) - i)):
+		# print prototype[j+i]
 		count(peak[0][j],prototype[j+i])
-		print prototype[j+i]
+		# print prototype[j+i]
 
 #The allocation step of k-means clustering
 #Now also adds to the prototypical means for the recentering step
 def allocate (peaks, means, alignmentMatrix):
 	#Outliers are stored in the first cluster (list) in clusters
 	clusters = [[]]
+	for mean in means:
+		clusters += [[mean]]
 	prototypes = initializePrototypes(means)
 	for i in range(len(peaks)):
 		#the closest mean, instantiated as the first cluster, 0 alignment score
@@ -124,11 +126,11 @@ def recenter (clusters, deltaMeans, prototypes):
 				total += prob
 			#should there ever be a mean without peaks? I don't think so
 			#Also, is it better to have the sum of the values at a location >1?
-			print total
-			if total != 0:
+			# print total
+			# if total != 0:
 				#All locations should have 4 elements, change to len(loc)?
-				for p in range(4):
-					loc[p] = loc[p] / total
+				# for p in range(4):
+					# loc[p] = loc[p] / total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change

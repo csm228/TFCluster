@@ -19,7 +19,7 @@ def calcSubSize (numMeans, numPeaks):
 	#deal with the case where the subsample or the number of peaks left
 	#is less than the number of new guessed clusters [+5 below]
 	subSize = numPeaks//10 + 5
-	return subSize
+	return min(subSize,numPeaks) #This feels horrible - deal with a lack of outliers ELSEWHERE
 
 #Takes a random peak and removes it from the list of peaks,
 #returns (peak, remaining peaks) as a tuple
@@ -48,30 +48,31 @@ def kPlusPlus (means, peaks):
 			seedIndex = i
 	return (peaks.pop(seedIndex),peaks)
 
-#The matrix array of characters is a list of [probA;probT;probG;probC] lists
-# def initProb (character):
-# 	if character == 'A':
-# 		return [1,0,0,0]
-# 	elif character == 'T':
-# 		return [0,1,0,0]
-# 	elif character == 'G':
-# 		return [0,0,1,0]
-# 	elif character == 'C':
-# 		return [0,0,0,1]
-# 	else:
-# 		print "Incorrect string in peaks, implement error handling"
-
-#This rearrangement of seed generation may reduce mean locations with [0,0,0,0]
+# The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
 	if character == 'A':
-		return [5,1,1,1]
+		return [1,0,0,0]
 	elif character == 'T':
-		return [1,5,1,1]
+		return [0,1,0,0]
 	elif character == 'G':
-		return [1,1,5,1]
+		return [0,0,1,0]
 	elif character == 'C':
-		return [1,1,1,5]
-	print "Incorrect string in peaks, implement error handling"
+		return [0,0,0,1]
+	else:
+		print "Incorrect string in peaks, implement error handling"
+
+#This rearrangement of seed generation may reduce mean locations with [0,0,0,0]
+#OR NOT :[
+# def initProb (character):
+# 	if character == 'A':
+# 		return [5,1,1,1]
+# 	elif character == 'T':
+# 		return [1,5,1,1]
+# 	elif character == 'G':
+# 		return [1,1,5,1]
+# 	elif character == 'C':
+# 		return [1,1,1,5]
+# 	print "Incorrect string in peaks, implement error handling"
 
 #abstracts a peak seed into a mean
 def abstract(peak):
@@ -84,6 +85,7 @@ def abstract(peak):
 # picks a subsample from peaks, 
 # then picks seed means from that by k++ w/o replacement
 # Need to implement what happens when numMeans > len(peaks)
+# ALSO, for some reason it tried to keep running with no peaks in otliers - ?
 def pickMeans (peaks, numMeans):
 	#New object with list() - not an alias
 	nonReplacement = list(peaks)
@@ -167,7 +169,8 @@ def main (peaks):
 	while welchTest(prevClusters,currClusters) > probabilityThreshold:
 		numNewMeans = guessNewMeans(peaks, means)
 		outliers = currClusters[0]
-		means += pickMeans(outliers,numNewMeans)
+		if len(outliers) > 0: #Ugh, please come up with a more thought out response here :(
+			means += pickMeans(outliers,numNewMeans)
 		prevClusters = list(currClusters)
 		(means,currClusters) = cluster.cluster(peaks,means)
 		print 'finished clustering of subsequent k guess'
