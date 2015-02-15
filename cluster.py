@@ -4,6 +4,7 @@ import align
 #doesn't align (returns 0 instead)
 outlierThreshold = 0
 
+#This needs to scale with input size/characteristics
 allocationCessationThreshold = 1000
 
 #In case the datatype changes, or we want to
@@ -37,8 +38,9 @@ def count (character, probArray):
 		print "Incorrect string in peaks (recentering), implement error handling"
 	return
 
-def account(peak, mean, i):
-	for j in range(max(0,-i),min(len(peak[0]), meanLength - i)):
+#Subfunction for adding a peak to the prototypical mean PARING NEEDED
+def account(peak, prototype, i):
+	for j in range(max(0,-i),min(len(peak[0]), len(mean) - i)):
 		print prototype[j+i]
 		count(peak[0][j],prototype[j+i])
 		print prototype[j+i]
@@ -50,24 +52,26 @@ def allocate (peaks, means, alignmentMatrix):
 	clusters = [[]]
 	prototypes = initializePrototypes(means)
 	for i in range(len(peaks)):
-		#the score matrix needs to start with a value for the outlier cluster
-		alignments = [(0,0)] + alignmentMatrix[i]
-		for j in range(len(means)):
-			(i,score) = alignmentMatrix[i][j]
-			scores += [score]
-		maxScore = scores[0]
-		#the closest mean, instantiated as the outlier cluster
+		#the closest mean, instantiated as the first cluster, 0 alignment score
+		#if the maxScore changes, the values will be correct,
+		#if it doesn't they ever get used
 		nearest = 0
-		for k in range(1,len(scores)):
+		maxScore = 0
+		alignmentIndex = 0
+		for j in range(len(means)):
+			(index,score) = alignmentMatrix[i][j]
 			#How to resolve ties?
-			if scores[k] > maxScore:
-				maxScore = scores[k]
-				nearest = k
+			if score > maxScore:
+				maxScore = score
+				nearest = j
+				alignmentIndex = index
 		if maxScore <= outlierThreshold:
 			group(peaks[i], 0, clusters)
 		else:
-			group(peaks[i], nearest, clusters)
-	return clusters
+			#grouping needs nearest+1 because 0 is the outliers
+			group(peaks[i], nearest+1, clusters)
+			account(peaks[i], prototypes[nearest], alignmentIndex)
+	return (clusters, prototypes)
 
 # def allocate (peaks, means, alignmentMatrix):
 # 	#Outliers are stored in the first cluster (list) in clusters
@@ -106,46 +110,30 @@ def difference (prevMean, currMean):
 	return diff
 
 
+#DONE BEEN CANNABILIZED :P
 #if recentered mean moves from seed (previous mean), throw out and pick only from outliers
 #recenter on the fly: store number in cluster and just add then average??
 #The calculation step of the "centroids" of the clusters
-def recenter (clusters, deltaMeans, alignmentMatrix):
+def recenter (clusters, deltaMeans, prototypes):
 	for j in range(1,len(clusters)):
-		#The prototypical mean, generated at recentering
-		prototype = []
-		cluster = clusters[j]
-		#cluster[0] is the previous mean, j = 0 is the outlier cluster
-		for i in range(len(cluster[0])):
-			prototype += [[0,0,0,0]]
-		#calculating the distribution in bases of the mean
-		meanWords = align.wordify(cluster[0])
-		meanLength = len(cluster[0])
-		for peak in cluster[1:]:
-			#MEMOIZE THE HECK OUT OF THIS PLEASE
-			i = align.index_of_align(peak,meanWords)
-			#May want to change this for extending means - when peaks flow over
-			#Currently, it just keeps the original seed length & alignment
-			#ALSO, accounts for alignments prior to the beginning of the mean,
-			# or flowing over the end
-			for j in range(max(0,-i),min(len(peak[0]), meanLength - i)):
-				print prototype[j+i]
-				count(peak[0][j],prototype[j+i])
-				print prototype[j+i]
+		prototype = prototypes[j-1] #take out the outlier cluster
 		for loc in prototype:
 			total = 0
 			for prob in loc:
 				# print prob
 				total += prob
 			#should there ever be a mean without peaks? I don't think so
+			#Also, is it better to have the sum of the values at a location >1?
+			print total
 			if total != 0:
-				for prob in loc:
-					# print total
-					prob /= total
+				#All locations should have 4 elements, change to len(loc)?
+				for p in range(4):
+					loc[p] = loc[p] / total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
-		deltaMeans += difference(cluster[0],prototype)
-		cluster[0] = prototype
+		deltaMeans += difference(clusters[j][0],prototype)
+		clusters[j][0] = prototype
 	return deltaMeans
 
 # def recenter (clusters,deltaMeans):
@@ -201,9 +189,9 @@ def cluster (peaks, means):
 	clusters = []
 	# print means[0]
 	while deltaMeans > allocationCessationThreshold:
-		alignmentMatrix = generate_align_matrix(peaks,means)
-		clusters = allocate(peaks,means,alignmentMatrix)
+		alignmentMatrix = align.generate_align_matrix(peaks,means)
+		(clusters, prototypes) = allocate(peaks,means,alignmentMatrix)
 		# print clusters[1][0]
-		deltaMeans = recenter(clusters,initDeltaMeans,alignmentMatrix)
+		deltaMeans = recenter(clusters,initDeltaMeans,prototypes)
 		means = extractMeans(clusters)
 	return (extractMeans(clusters),clusters)
