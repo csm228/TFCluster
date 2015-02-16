@@ -7,8 +7,10 @@ outlierThreshold = 0
 
 #In case the datatype changes, or we want to
 #remember the cluster of the peak by storing it in the peak
-def group (peak, meanIndex, clusters):
+def group (peak, meanIndex, clusters, assignments):
 	clusters[meanIndex] += [peak]
+	peakNum = peak[1]
+	assignments[peakNum] = meanIndex
 
 #Generates blank prototypes. Shouldn't be affected by paring
 def initializePrototypes(means):
@@ -46,7 +48,7 @@ def account(peak, prototype, i):
 
 #The allocation step of k-means clustering
 #Now also adds to the prototypical means for the recentering step
-def allocate (peaks, means, alignmentMatrix):
+def allocate (peaks, means, alignmentMatrix, assignments):
 	#Outliers are stored in the first cluster (list) in clusters
 	clusters = [[]]
 	for mean in means:
@@ -67,10 +69,10 @@ def allocate (peaks, means, alignmentMatrix):
 				nearest = j
 				alignmentIndex = index
 		if maxScore <= outlierThreshold:
-			group(peaks[i], 0, clusters)
+			group(peaks[i], 0, clusters, assignments)
 		else:
 			#grouping needs nearest+1 because 0 is the outliers
-			group(peaks[i], nearest+1, clusters)
+			group(peaks[i], nearest+1, clusters, assignments)
 			account(peaks[i], prototypes[nearest], alignmentIndex)
 	return (clusters, prototypes)
 
@@ -178,18 +180,29 @@ def recenter (clusters, prototypes):
 
 #perhaps REPLACE THIS with a boolean during alignment
 # and a value in the peak data showing the cluster assignment # (check if changed)
-def termination(prevClusters,currClusters):
-	done = True
-	numClusters = len(currClusters)
-	if len(prevClusters) == numClusters:
-		if prevClusters[0] != currClusters[0]:
-			done = False
-		for j in range(numClusters):
-			if prevClusters[j][1:] != currClusters[j][1:]:
-				done = False
+def termination(prevAssignments,currAssignments):
+	numPeaks = len(currAssignments)
+	numReallocated = 0
+	for j in range(numPeaks):
+		if prevAssignments[j] != currAssignments[j]:
+			numReallocated += 1
+	if numReallocated >= (numPeaks // 10):
+		return False
 	else:
-		done = False
-	return done
+		return True
+
+# def termination(prevClusters,currClusters):
+# 	done = True
+# 	numClusters = len(currClusters)
+# 	if len(prevClusters) == numClusters:
+# 		if prevClusters[0] != currClusters[0]:
+# 			done = False
+# 		for j in range(numClusters):
+# 			if prevClusters[j][1:] != currClusters[j][1:]:
+# 				done = False
+# 	else:
+# 		done = False
+# 	return done
 
 #to extract the means so that they can be given back to main
 def extractMeans (clusters):
@@ -200,18 +213,37 @@ def extractMeans (clusters):
 
 #The k-means clustering algorithm, managing the termination of clustering under a guessed number of means
 def cluster (peaks, means):
-	currClusters = []
-	prevClusters = []
+	clusters = []
+	currAssignments = [0] * len(peaks)
+	prevAssignments = list(currAssignments)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
-	(currClusters, prototypes) = allocate(peaks,means,alignmentMatrix)
+	(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 	# print clusters[1][0]
-	recenter(currClusters,prototypes)
-	means = extractMeans(currClusters)
+	recenter(clusters,prototypes)
+	means = extractMeans(clusters)
 	# print means[0]
-	while not termination(prevClusters,currClusters):
-		prevClusters = list(currClusters)
+	while not termination(prevAssignments,currAssignments):
+		prevAssignments = list(currAssignments)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
-		(currClusters, prototypes) = allocate(peaks,means,alignmentMatrix)
+		(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 		# print clusters[1][0]
+		deltaMeans = recenter(clusters,prototypes)
 		means = extractMeans(clusters)
 	return (extractMeans(clusters),clusters)
+
+# def cluster (peaks, means):
+# 	currClusters = []
+# 	alignmentMatrix = align.generate_align_matrix(peaks,means)
+# 	(clusters, prototypes) = allocate(peaks,means,alignmentMatrix)
+# 	# print clusters[1][0]
+# 	recenter(currClusters,prototypes)
+# 	means = extractMeans(currClusters)
+# 	# print means[0]
+# 	while not termination(prevClusters,currClusters):
+# 		alignmentMatrix = align.generate_align_matrix(peaks,means)
+# 		(currClusters, prototypes) = allocate(peaks,means,alignmentMatrix)
+# 		# print clusters[1][0]
+# 		deltaMeans = recenter(currClusters,prototypes)
+# 		means = extractMeans(currClusters)
+# 	return (extractMeans(clusters),clusters)
+
