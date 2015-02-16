@@ -51,15 +51,27 @@ def kPlusPlus (means, peaks):
 # The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
 	if character == 'A':
-		return [1,0,0,0]
+		return [1.0,0.0,0.0,0.0]
 	elif character == 'T':
-		return [0,1,0,0]
+		return [0.0,1.0,0.0,0.0]
 	elif character == 'G':
-		return [0,0,1,0]
+		return [0.0,0.0,1.0,0.0]
 	elif character == 'C':
-		return [0,0,0,1]
+		return [0.0,0.0,0.0,1.0]
 	else:
 		print "Incorrect string in peaks, implement error handling"
+
+# def initProb (character):
+# 	if character == 'A':
+# 		return [1,0,0,0]
+# 	elif character == 'T':
+# 		return [0,1,0,0]
+# 	elif character == 'G':
+# 		return [0,0,1,0]
+# 	elif character == 'C':
+# 		return [0,0,0,1]
+# 	else:
+# 		print "Incorrect string in peaks, implement error handling"
 
 #This rearrangement of seed generation may reduce mean locations with [0,0,0,0]
 #OR NOT :[
@@ -123,9 +135,9 @@ def variance (cluster):
 def stdDev (cluster):
 	return math.sqrt(variance(cluster))
 
-#Tie this to subsample in the future - you need 
+#Tie this to subsample in the future
 def guessInitMeans(peaks):
-	return 5
+	return (len(peaks) // 5)
 
 #Guesses how many more means will be needed
 #Just iterates by 5. Ouch.

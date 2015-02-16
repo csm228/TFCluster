@@ -4,8 +4,6 @@ import align
 #doesn't align (returns 0 instead)
 outlierThreshold = 0
 
-#This needs to scale with input size/characteristics
-allocationCessationThreshold = 500
 
 #In case the datatype changes, or we want to
 #remember the cluster of the peak by storing it in the peak
@@ -19,7 +17,8 @@ def initializePrototypes(means):
 		#The prototypical mean, generated during allocation
 		prototype = []
 		for n in range(len(means[m])):
-			prototype += [[0,0,0,0]]
+			#for now, to try and prevent null means, also try [0.0,0.0,0.0,0.0]
+			prototype += [[1.0,1.0,1.0,1.0]]
 		prototypes += [prototype]
 	return prototypes
 
@@ -116,8 +115,9 @@ def difference (prevMean, currMean):
 #if recentered mean moves from seed (previous mean), throw out and pick only from outliers
 #recenter on the fly: store number in cluster and just add then average??
 #The calculation step of the "centroids" of the clusters
-def recenter (clusters, deltaMeans, prototypes):
+def recenter (clusters, prototypes):
 	for j in range(1,len(clusters)):
+		print clusters[j][0]
 		prototype = prototypes[j-1] #take out the outlier cluster
 		for loc in prototype:
 			total = 0
@@ -127,16 +127,16 @@ def recenter (clusters, deltaMeans, prototypes):
 			#should there ever be a mean without peaks? I don't think so
 			#Also, is it better to have the sum of the values at a location >1?
 			# print total
-			# if total != 0:
+			# if total != 0: #unnecessary if using prototypes instantiated w/ [1,1,1,1]
 				#All locations should have 4 elements, change to len(loc)?
-				# for p in range(4):
-					# loc[p] = loc[p] / total
+			for p in range(4):
+				loc[p] = loc[p] / total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
-		deltaMeans += difference(clusters[j][0],prototype)
+		print prototype
 		clusters[j][0] = prototype
-	return deltaMeans
+	return
 
 # def recenter (clusters,deltaMeans):
 # 	for cluster in clusters[1:]:
@@ -176,6 +176,21 @@ def recenter (clusters, deltaMeans, prototypes):
 # 		cluster[0] = prototype
 # 	return deltaMeans
 
+#perhaps REPLACE THIS with a boolean during alignment
+# and a value in the peak data showing the cluster assignment # (check if changed)
+def termination(prevClusters,currClusters):
+	done = True
+	numClusters = len(currClusters)
+	if len(prevClusters) == numClusters:
+		if prevClusters[0] != currClusters[0]:
+			done = False
+		for j in range(numClusters):
+			if prevClusters[j][1:] != currClusters[j][1:]:
+				done = False
+	else:
+		done = False
+	return done
+
 #to extract the means so that they can be given back to main
 def extractMeans (clusters):
 	means = []
@@ -185,15 +200,18 @@ def extractMeans (clusters):
 
 #The k-means clustering algorithm, managing the termination of clustering under a guessed number of means
 def cluster (peaks, means):
-	#The total change in the means by alignment score, this should be eventually replaced
-	deltaMeans = 1001
-	initDeltaMeans = 0
-	clusters = []
+	currClusters = []
+	prevClusters = []
+	alignmentMatrix = align.generate_align_matrix(peaks,means)
+	(currClusters, prototypes) = allocate(peaks,means,alignmentMatrix)
+	# print clusters[1][0]
+	recenter(currClusters,prototypes)
+	means = extractMeans(currClusters)
 	# print means[0]
-	while deltaMeans > allocationCessationThreshold:
+	while not termination(prevClusters,currClusters):
+		prevClusters = list(currClusters)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
-		(clusters, prototypes) = allocate(peaks,means,alignmentMatrix)
+		(currClusters, prototypes) = allocate(peaks,means,alignmentMatrix)
 		# print clusters[1][0]
-		deltaMeans = recenter(clusters,initDeltaMeans,prototypes)
 		means = extractMeans(clusters)
 	return (extractMeans(clusters),clusters)
