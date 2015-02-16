@@ -132,7 +132,8 @@ def recenter (clusters, prototypes):
 			# if total != 0: #unnecessary if using prototypes instantiated w/ [1,1,1,1]
 				#All locations should have 4 elements, change to len(loc)?
 			for p in range(4):
-				loc[p] = loc[p] / total
+				loc[p] = (loc[p] / total)^2 #try exponentiating the conservation for better alignments
+
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
