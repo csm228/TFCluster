@@ -107,7 +107,7 @@ def pickMeans (peaks, numMeans):
 def pickInitMeans (peaks, numMeans):
 	pickMeans (peaks, numMeans)
 
-def pickNewMeans (peaks, numMeans, clusters):
+def pickNewMeans (clusters, numMeans, clusterVariances):
 	means = []
 	outliers = clusters[0]
 	numOutliers = len(outliers)
@@ -116,7 +116,21 @@ def pickNewMeans (peaks, numMeans, clusters):
 		if numOutliers > 0:
 			means += pickMeans(outliers, numOutliers)
 			numMeans -= numOutliers
-		
+		while numMeans > 0:
+			maxVar = max(clusterVariances)
+			j = clusterVariances.index(maxVar)
+			clusterVariances.pop(j)
+			cluster = clusters[j][1:]
+			numPeaks = len(cluster)
+			#variace of an empty mean is currently 0, but that could change,
+			#so account for pulling from clusters without any means?
+			if numMeans > numPeaks:
+				#If you pull apart an old mean, probs should throw out the old mean for the new ones.
+				means += pickMeans(cluster, numPeaks)
+				numMeans -= numOutliers
+			else:
+				means += pickMeans(clusters[j][1:], numMeans)
+				numMeans -= numMeans
 	else:
 		means += pickMeans(outliers, numMeans)
 

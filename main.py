@@ -48,16 +48,13 @@ def guessInitMeans(peaks):
 def guessNewMeans(peaks, means, p_val):
 	return 5
 
-def welchTest (prevClusters,currClusters,currAlignmentMatrix,prevAlignmentMatrix):
-	prevClusterVariances = []
+def welchTest (currClusters,alignmentMatrix,prevClusterVariances):
 	currClusterVariances = []
-	for c1 in range(1,len(prevClusters)):
-		prevClusterVariances += [variance(prevClusters[c1],c1,prevAlignmentMatrix)]
-	for c2 in range(1,len(currClusters)):
-		currClusterVariances += [variance(currCluster[c2],c2,currAlignmentMatrix)]
+	for c in range(1,len(currClusters)):
+		currClusterVariances += [variance(currCluster[c],c,alignmentMatrix)]
 	(t_stat,p_val) = scipy.stats.ttest_ind(prevClusterVariances, currClusterVariances, equal_var = False)
 	print p_val
-	return p_val
+	return (p_val,currClusterVariances)
 
 #temporary initial step for the welch's test (?)
 def clustrifyMeans (means):
@@ -72,27 +69,25 @@ def clustrifyMeans (means):
 # print a line when the variance goes back up between means
 # Requires a list of peaks where the sequence is the first element of the peak
 def main (peaks):
-	prevClusters = []
 	means = seed.pickInitMeans(peaks,guessInitMeans(peaks))
 	print peaks[0]
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
-	currClusters = [peaks] + clustrifyMeans(means)
-	prevClusters = currClusters
+	clusters = [peaks] + clustrifyMeans(means)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
 	clusterVariances = [0]
 	print 'first runthrough of clustering'
-	(means,currClusters) = cluster.cluster(peaks,means,currAlignmentMatrix)
-	currAlignmentMatrix = align.generate_align_matrix(peaks,means)
-	p_val = welchTest(prevClusters,currClusters,currAlignmentMatrix,prevAlignmentMatrix)
+	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
+	alignmentMatrix = align.generate_align_matrix(peaks,means)
+	(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
 	print 'starting welch\'s t-test clustering with centroid means'
 	while p_val < probabilityThreshold:
 		means = paring.paredMeans(means)
 		numNewMeans = guessNewMeans(peaks, means, p_val)
-		means += pickMeans(currClusters, numNewMeans)
-		prevClusters = currClusters
-		prevAlignmentMatrix = currAlignmentMatrix
-		currAlignmentMatrix = align.generate_align_matrix(peaks,means)
-		(means,currClusters) = cluster.cluster(peaks,means,currAlignmentMatrix)
-		p_val = welchTest(prevClusters,currClusters,currAlignmentMatrix,prevAlignmentMatrix)
+		#currently, no correlation between how many means duplicated/dropped in paring
+		#and how many and from where they are added in mean picking
+		means += pickMeans(clusters, numNewMeans, clusterVariances)
+		alignmentMatrix = align.generate_align_matrix(peaks,means)
+		(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
+		(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
 		print 'finished clustering of subsequent k guess'
-	return currClusters
+	return clusters
