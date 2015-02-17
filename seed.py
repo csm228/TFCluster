@@ -106,6 +106,7 @@ def pickMeans (peaks, numMeans):
 			seeds += [abstract(seed)]
 	return seeds
 
+#Assumes that the initial mean guess won't be larger that the number of peaks
 def pickInitMeans (peaks, numMeans):
 	return pickMeans(peaks, numMeans)
 

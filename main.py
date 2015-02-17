@@ -32,7 +32,8 @@ def variance (cluster,j,alignmentMatrix):
 	sumVar = 0
 	meanLength = len(cluster[0])
 	for peak in cluster[1:]:
-		(i,score) = alignmentMatrix[peak[1]][j]
+		peakNum = peak[1]
+		(i,score) = alignmentMatrix[peakNum][j]
 		#This definition of distance is kinda inconsistent -
 		# alignment gives word and segment scores, not whole sequence alignments
 		sumVar += (meanLength - score)**2
@@ -51,8 +52,8 @@ def stdDev (cluster):
 
 def welchTest (currClusters,alignmentMatrix,prevClusterVariances):
 	currClusterVariances = []
-	for c in range(1,len(currClusters)):
-		currClusterVariances += [variance(currClusters[c],c,alignmentMatrix)]
+	for c in range(len(currClusters)-1):
+		currClusterVariances += [variance(currClusters[c+1],c,alignmentMatrix)]
 	(t_stat,p_val) = scipy.stats.ttest_ind(prevClusterVariances, currClusterVariances, equal_var = False)
 	print p_val
 	return (p_val,currClusterVariances)
@@ -75,7 +76,7 @@ def main (peaks):
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
 	clusters = [peaks] + clustrifyMeans(means)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
-	clusterVariances = [0]
+	clusterVariances = [0]*5 #just something so that the first Welch's test doesn't cause termination
 	print 'first runthrough of clustering'
 	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
@@ -86,7 +87,7 @@ def main (peaks):
 		numNewMeans = guessNewMeans(peaks, means, p_val)
 		#currently, no correlation between how many means duplicated/dropped in paring
 		#and how many and from where they are added in mean picking
-		means += pickMeans(clusters, numNewMeans, clusterVariances)
+		means += seed.pickNewMeans(clusters, numNewMeans, clusterVariances)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
 		(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
 		(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
