@@ -3,13 +3,13 @@
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words, lower than alignment to allow for variance?
-highScoreThreshold = 2.5
+highScoreThreshold = 3.5
 
 #Distance that two words must be under to group into a segment pair
 segPairWordMaxDist = 8
 
 #How far around the high score segment should be included?
-paringBufferLength = 3
+paringBufferLength = 2
 
 #Takes a sequence (or mean) and returns the list of words of length wordLength
 #Used lots, copied here for access to wordLength
@@ -34,6 +34,7 @@ def processSegments(segments, mean):
 		i1 = max(0, i - paringBufferLength)
 		i2 = min(len(mean),j+wordLength+paringBufferLength)
 		newMeans += [mean[i1:i2]]
+	# print str(newMeans) + '\n'
 	return newMeans
 
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
@@ -68,7 +69,7 @@ def pare2(mean):
 
 
 #Currently the algorithm pares every mean every iteration, maybe too much?
-def paring(means):
+def paredMeans(means):
 	newMeans = []
 	for mean in means:
 		newMeans += pare(mean)

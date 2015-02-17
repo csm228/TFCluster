@@ -3,7 +3,7 @@
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words
-highScoreThreshold = 3
+highScoreThreshold = 4
 
 #Distance that two words must be under to group into a segment pair
 segPairWordMaxDist = 8

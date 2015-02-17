@@ -92,8 +92,9 @@ def difference (prevMean, currMean):
 #recenter on the fly: store number in cluster and just add then average??
 #The calculation step of the "centroids" of the clusters
 def recenter (clusters, prototypes):
+	means = []
 	for j in range(1,len(clusters)):
-		print clusters[j][0]
+		# print clusters[j][0]
 		prototype = prototypes[j-1] #take out the outlier cluster
 		for loc in prototype:
 			total = 0
@@ -115,7 +116,8 @@ def recenter (clusters, prototypes):
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
 		clusters[j][0] = prototype
-	return
+		means += [prototype]
+	return means
 
 #perhaps REPLACE THIS with a boolean during alignment
 # and a value in the peak data showing the cluster assignment # (check if changed)
@@ -125,37 +127,32 @@ def termination(prevAssignments,currAssignments):
 	for j in range(numPeaks):
 		if prevAssignments[j] != currAssignments[j]:
 			numReallocated += 1
-	if numReallocated >= (numPeaks // 10):
+	if numReallocated <= (numPeaks // 10) + 1:
 		return False
 	else:
 		return True
 
 #to extract the means so that they can be given back to main
-def extractMeans (clusters):
-	means = []
-	for cluster in clusters[1:]:
-		means += [cluster[0]]
-	return means
+# def extractMeans (clusters):
+# 	means = []
+# 	for cluster in clusters[1:]:
+# 		means += [cluster[0]]
+# 	return means
 
 #The k-means clustering algorithm, managing the termination of clustering under a guessed number of means
-def cluster (peaks, means):
+def cluster (peaks, means, alignmentMatrix):
 	clusters = []
 	currAssignments = [0] * len(peaks)
 	prevAssignments = list(currAssignments)
-	alignmentMatrix = align.generate_align_matrix(peaks,means)
 	(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 	# print clusters[1][0]
-	recenter(clusters,prototypes)
-	means = extractMeans(clusters)
+	means = recenter(clusters,prototypes)
 	# print means[0]
 	while not termination(prevAssignments,currAssignments):
 		prevAssignments = list(currAssignments)
-		#The paring step, currently pares EVERYTHING
-		means = paring(means)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
 		(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 		# print clusters[1][0]
-		deltaMeans = recenter(clusters,prototypes)
-		means = extractMeans(clusters)
-	return (extractMeans(clusters),clusters)
+		means = recenter(clusters,prototypes)
+	return (means,clusters)
 
