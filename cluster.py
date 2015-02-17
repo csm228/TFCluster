@@ -5,6 +5,7 @@ import align
 outlierThreshold = 0
 
 
+
 #In case the datatype changes, or we want to
 #remember the cluster of the peak by storing it in the peak
 def group (peak, meanIndex, clusters, assignments):
@@ -76,33 +77,6 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 			account(peaks[i], prototypes[nearest], alignmentIndex)
 	return (clusters, prototypes)
 
-# def allocate (peaks, means, alignmentMatrix):
-# 	#Outliers are stored in the first cluster (list) in clusters
-# 	clusters = [[]]
-# 	meanWordLists = []
-# 	for mean in means:
-# 		clusters += [[mean]]
-# 		meanWordLists += [align.wordify(mean)]
-# 	for peak in peaks:
-# 		#the closest mean, instantiated as the outlier cluster
-# 		scores = []
-# 		for meanWords in meanWordLists:
-# 			# (i,score) = align.align(peak,meanWords)
-# 			scores += [align.score_of_align(peak,meanWords)]
-# 		maxScore = scores[0]
-# 		nearest = 0
-# 		for j in range(1,len(scores)):
-# 			#How to resolve ties?
-# 			if scores[j] > maxScore:
-# 				maxScore = scores[j]
-# 				nearest = j
-# 		if maxScore <= outlierThreshold:
-# 			group(peak, 0, clusters)
-# 		else:
-# 			group(peak, nearest, clusters)
-# 	return clusters
-
-
 #Reliant on means of the same size....
 def difference (prevMean, currMean):
 	diff = 0
@@ -126,58 +100,22 @@ def recenter (clusters, prototypes):
 			for prob in loc:
 				# print prob
 				total += prob
-			#should there ever be a mean without peaks? I don't think so
+			#should there ever be a mean without peaks? Throw it out?
 			#Also, is it better to have the sum of the values at a location >1?
-			# print total
 			# if total != 0: #unnecessary if using prototypes instantiated w/ [1,1,1,1]
 				#All locations should have 4 elements, change to len(loc)?
 			for p in range(4):
-				loc[p] = (loc[p] / total)^2 #try exponentiating the conservation for better alignments
-
+				loc[p] = (loc[p] / total)**2 #try exponentiating the conservation for better alignments
+			total = 0
+			for prob in loc:
+				total += prob
+			for p in range(4):
+				loc[p] = loc[p] / total
 		#Here is where highly variant means should be thrown out,
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change
-		print prototype
 		clusters[j][0] = prototype
 	return
-
-# def recenter (clusters,deltaMeans):
-# 	for cluster in clusters[1:]:
-# 		#The prototypical mean, generated at 
-# 		prototype = []
-# 		#cluster[0] is the previous mean
-# 		for i in range(len(cluster[0])):
-# 			prototype += [[0,0,0,0]]
-# 		#calculating the distribution in bases of the mean
-# 		meanWords = align.wordify(cluster[0])
-# 		meanLength = len(cluster[0])
-# 		for peak in cluster[1:]:
-# 			#MEMOIZE THE HECK OUT OF THIS PLEASE
-# 			i = align.index_of_align(peak,meanWords)
-# 			#May want to change this for extending means - when peaks flow over
-# 			#Currently, it just keeps the original seed length & alignment
-# 			#ALSO, accounts for alignments prior to the beginning of the mean,
-# 			# or flowing over the end
-# 			for j in range(max(0,-i),min(len(peak[0]), meanLength - i)):
-# 				print prototype[j+i]
-# 				count(peak[0][j],prototype[j+i])
-# 				print prototype[j+i]
-# 		for loc in prototype:
-# 			total = 0
-# 			for prob in loc:
-# 				# print prob
-# 				total += prob
-# 			#should there ever be a mean without peaks? I don't think so
-# 			if total != 0:
-# 				for prob in loc:
-# 					# print total
-# 					prob /= total
-# 		#Here is where highly variant means should be thrown out,
-# 		#but need to allow for the first run with a mean - 
-# 		# the seed will always have high change
-# 		deltaMeans += difference(cluster[0],prototype)
-# 		cluster[0] = prototype
-# 	return deltaMeans
 
 #perhaps REPLACE THIS with a boolean during alignment
 # and a value in the peak data showing the cluster assignment # (check if changed)
@@ -191,19 +129,6 @@ def termination(prevAssignments,currAssignments):
 		return False
 	else:
 		return True
-
-# def termination(prevClusters,currClusters):
-# 	done = True
-# 	numClusters = len(currClusters)
-# 	if len(prevClusters) == numClusters:
-# 		if prevClusters[0] != currClusters[0]:
-# 			done = False
-# 		for j in range(numClusters):
-# 			if prevClusters[j][1:] != currClusters[j][1:]:
-# 				done = False
-# 	else:
-# 		done = False
-# 	return done
 
 #to extract the means so that they can be given back to main
 def extractMeans (clusters):
@@ -225,26 +150,12 @@ def cluster (peaks, means):
 	# print means[0]
 	while not termination(prevAssignments,currAssignments):
 		prevAssignments = list(currAssignments)
+		#The paring step, currently pares EVERYTHING
+		means = paring(means)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
 		(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 		# print clusters[1][0]
 		deltaMeans = recenter(clusters,prototypes)
 		means = extractMeans(clusters)
 	return (extractMeans(clusters),clusters)
-
-# def cluster (peaks, means):
-# 	currClusters = []
-# 	alignmentMatrix = align.generate_align_matrix(peaks,means)
-# 	(clusters, prototypes) = allocate(peaks,means,alignmentMatrix)
-# 	# print clusters[1][0]
-# 	recenter(currClusters,prototypes)
-# 	means = extractMeans(currClusters)
-# 	# print means[0]
-# 	while not termination(prevClusters,currClusters):
-# 		alignmentMatrix = align.generate_align_matrix(peaks,means)
-# 		(currClusters, prototypes) = allocate(peaks,means,alignmentMatrix)
-# 		# print clusters[1][0]
-# 		deltaMeans = recenter(currClusters,prototypes)
-# 		means = extractMeans(currClusters)
-# 	return (extractMeans(clusters),clusters)
 

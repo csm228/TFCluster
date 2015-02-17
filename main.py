@@ -35,6 +35,7 @@ def minScore (peak, meanWordsList):
 	return minVal
 
 def kPlusPlus (means, peaks):
+	print "kPlusPlus"
 	meanWordsList = []
 	for mean in means:
 		meanWordsList += [align.wordify(mean)]
@@ -137,7 +138,7 @@ def stdDev (cluster):
 
 #Tie this to subsample in the future
 def guessInitMeans(peaks):
-	return (len(peaks) // 5)
+	return (len(peaks) // 15) + 5
 
 #Guesses how many more means will be needed
 #Just iterates by 5. Ouch.
