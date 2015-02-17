@@ -3,7 +3,6 @@ import cluster
 import seed
 import paring
 
-import random
 import math
 import copy #need to make deep copies anywhere?
 
@@ -14,27 +13,6 @@ from scipy import stats
 #The p-value to check against to stop the clustering algorithm. Change this
 probabilityThreshold = .96
 
-
-# try storing prev. cluster variance? - in main
-def variance (cluster,j,alignmentMatrix):
-	sumVar = 0
-	meanLength = len(cluster[0])
-	for peak in cluster[1:]:
-		#This definition of distance is kinda inconsistent -
-		# alignment gives word and segment scores, not whole sequence alignments
-		sumVar += (meanLength - alignmentMatrix[peak[1]][j])**2
-	n = len(cluster) - 1
-	if n > 0:
-		#Integer division is "//" while "/" does floating point
-		return (sumVar / n)	
-	#What do you do if NOTHING gets clustered with the mean?
-	else:
-		return 0
-
-# returns the standard deviation of a cluster
-# measured by alignment score from the mean
-def stdDev (cluster):
-	return math.sqrt(variance(cluster))
 
 #Use an asymptotic function with the Welch's t-test p-value as a seed for
 #how far along the function to pick (closer to stable -> fewer new means)
@@ -48,10 +26,33 @@ def guessInitMeans(peaks):
 def guessNewMeans(peaks, means, p_val):
 	return 5
 
+
+# try storing prev. cluster variance? - in main
+def variance (cluster,j,alignmentMatrix):
+	sumVar = 0
+	meanLength = len(cluster[0])
+	for peak in cluster[1:]:
+		(i,score) = alignmentMatrix[peak[1]][j]
+		#This definition of distance is kinda inconsistent -
+		# alignment gives word and segment scores, not whole sequence alignments
+		sumVar += (meanLength - score)**2
+	n = len(cluster) - 1
+	if n > 0:
+		#Integer division is "//" while "/" does floating point
+		return (sumVar / n)	
+	#What do you do if NOTHING gets clustered with the mean?
+	else:
+		return 0
+
+# returns the standard deviation of a cluster
+# measured by alignment score from the mean
+def stdDev (cluster):
+	return math.sqrt(variance(cluster))
+
 def welchTest (currClusters,alignmentMatrix,prevClusterVariances):
 	currClusterVariances = []
 	for c in range(1,len(currClusters)):
-		currClusterVariances += [variance(currCluster[c],c,alignmentMatrix)]
+		currClusterVariances += [variance(currClusters[c],c,alignmentMatrix)]
 	(t_stat,p_val) = scipy.stats.ttest_ind(prevClusterVariances, currClusterVariances, equal_var = False)
 	print p_val
 	return (p_val,currClusterVariances)

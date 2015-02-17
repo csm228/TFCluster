@@ -1,4 +1,6 @@
+import align
 
+import random
 
 def calcSubSize (numMeans, numPeaks):
 	#deal with the case where the subsample or the number of peaks left
@@ -105,7 +107,7 @@ def pickMeans (peaks, numMeans):
 	return seeds
 
 def pickInitMeans (peaks, numMeans):
-	pickMeans (peaks, numMeans)
+	return pickMeans(peaks, numMeans)
 
 def pickNewMeans (clusters, numMeans, clusterVariances):
 	means = []
@@ -133,4 +135,5 @@ def pickNewMeans (clusters, numMeans, clusterVariances):
 				numMeans -= numMeans
 	else:
 		means += pickMeans(outliers, numMeans)
+	return means
 
