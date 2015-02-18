@@ -84,53 +84,69 @@ def abstract (peak):
 
 # picks a subsample from peaks, 
 # then picks seed means from that by k++ w/o replacement
-# Need to implement what happens when numMeans > len(peaks)
-# ALSO, for some reason it tried to keep running with no peaks in otliers - ?
+# ALSO, stop with no peaks in outliers - ?
 def pickMeans (peaks, numMeans):
-	#New object with list() - not an alias
-	nonReplacement = list(peaks)
-	subSample = []
-	subSampleSize = calcSubSize(numMeans, len(peaks))
-	for x in xrange(subSampleSize):
-		(thisPeak,rest) = sample(nonReplacement)
-		nonReplacement = rest
-		subSample += [thisPeak]
-	#Now we create the list of new means
-	seeds = []
-	(seed, subSample) = sample(subSample)
-	seeds += [abstract(seed)]
-	#PLEASE FIX numMeans guesses and index errors!!!!
-	if numMeans > 1:
-		for i in range(numMeans - 1):
-			(seed, subSample) = kPlusPlus(seeds,subSample)
-			seeds += [abstract(seed)]
-	return seeds
+	#Now it deals with all len 0 clusters here
+	if len(peaks) == 0:
+		return []
+	else:
+		#New object with list() - not an alias
+		nonReplacement = list(peaks)
+		subSample = []
+		subSampleSize = calcSubSize(numMeans, len(peaks))
+		for x in xrange(subSampleSize):
+			(thisPeak,rest) = sample(nonReplacement)
+			nonReplacement = rest
+			subSample += [thisPeak]
+		#Now we create the list of new means
+		seeds = []
+		(seed, subSample) = sample(subSample)
+		seeds += [abstract(seed)]
+		#PLEASE FIX numMeans guesses and index errors!!!!
+		if numMeans > 1:
+			for i in range(numMeans - 1):
+				(seed, subSample) = kPlusPlus(seeds,subSample)
+				seeds += [abstract(seed)]
+		return seeds
 
 #Assumes that the initial mean guess won't be larger that the number of peaks
-def pickInitMeans (peaks, numMeans):
+#May implement so that it is the only function to use subsampling,
+# assumes the initial k guess will reduce the number of sequences in any cluster significantly
+def pickInitMeans (peaks, numMeans):\
 	return pickMeans(peaks, numMeans)
 
+# def pickInitMeans (peaks, numMeans):
+# 	#New object with list() - not an alias
+# 	nonReplacement = list(peaks)
+# 	subSample = []
+# 	subSampleSize = calcSubSize(numMeans, len(peaks))
+# 	for x in xrange(subSampleSize):
+# 		(thisPeak,rest) = sample(nonReplacement)
+# 		nonReplacement = rest
+# 		subSample += [thisPeak]
+# 	return pickMeans(subSample, numMeans)
+
+#Still assumes mean guess <= number of total peaks
 def pickNewMeans (clusters, numMeans, clusterVariances):
 	means = []
 	outliers = clusters[0]
 	numOutliers = len(outliers)
 	#Perhaps divide the new seeds between outliers and old peaks based on size of outliers and variances?
 	if numMeans > numOutliers:
-		if numOutliers > 0:
-			means += pickMeans(outliers, numOutliers)
-			numMeans -= numOutliers
+		means += pickMeans(outliers, numOutliers)
+		numMeans -= numOutliers
+		prevClusterVariances = list(enumerate(list(clusterVariances)))
+		prevClusterVariances.sort(key = lambda seg: seg[1])
 		while numMeans > 0:
-			maxVar = max(clusterVariances)
-			j = clusterVariances.index(maxVar)
-			clusterVariances.pop(j)
+			(j,maxVar) = prevClusterVariances.pop()
 			cluster = clusters[j][1:]
 			numPeaks = len(cluster)
 			#variace of an empty mean is currently 0, but that could change,
-			#so account for pulling from clusters without any means?
+			#so account for pulling from clusters without any means? - currently pickMeans returns [] in this case
 			if numMeans > numPeaks:
 				#If you pull apart an old mean, probs should throw out the old mean for the new ones.
 				means += pickMeans(cluster, numPeaks)
-				numMeans -= numOutliers
+				numMeans -= numPeaks
 			else:
 				means += pickMeans(clusters[j][1:], numMeans)
 				numMeans -= numMeans

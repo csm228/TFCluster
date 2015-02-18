@@ -21,7 +21,8 @@ def initializePrototypes(means):
 		prototype = []
 		for n in range(len(means[m])):
 			#for now, to try and prevent null means, also try [0.0,0.0,0.0,0.0]
-			prototype += [[1.0,1.0,1.0,1.0]]
+			prototype += [[0.0,0.0,0.0,0.0]]
+			# prototype += [[1.0,1.0,1.0,1.0]]
 		prototypes += [prototype]
 	return prototypes
 
@@ -127,17 +128,7 @@ def termination(prevAssignments,currAssignments):
 	for j in range(numPeaks):
 		if prevAssignments[j] != currAssignments[j]:
 			numReallocated += 1
-	if numReallocated <= (numPeaks // 10) + 1:
-		return False
-	else:
-		return True
-
-#to extract the means so that they can be given back to main
-# def extractMeans (clusters):
-# 	means = []
-# 	for cluster in clusters[1:]:
-# 		means += [cluster[0]]
-# 	return means
+	return (numReallocated < (numPeaks // 10) + 1)
 
 #The k-means clustering algorithm, managing the termination of clustering under a guessed number of means
 def cluster (peaks, means, alignmentMatrix):

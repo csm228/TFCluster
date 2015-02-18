@@ -3,7 +3,7 @@
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words, lower than alignment to allow for variance?
-highScoreThreshold = 3.5
+highScoreThreshold = 3
 
 #Distance that two words must be under to group into a segment pair
 segPairWordMaxDist = 8
