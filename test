@@ -2,7 +2,7 @@
 set -o nounset
 if [ -f testData/genPeaks$1 ]
 then
-  python testing.py testData/genPeaks$1 testData/clusteredGenPeaks$1
+  python testMain.py testData/genPeaks$1 testData/clusteredGenPeaks$1
 else
   echo "Usage: $0 <name of existing genPeaks data>"
   exit

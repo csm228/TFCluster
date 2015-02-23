@@ -21,8 +21,8 @@ def initializePrototypes(means):
 		prototype = []
 		for n in range(len(means[m])):
 			#for now, to try and prevent null means, also try [0.0,0.0,0.0,0.0]
-			prototype += [[0.0,0.0,0.0,0.0]]
-			# prototype += [[1.0,1.0,1.0,1.0]]
+			# prototype += [[0.0,0.0,0.0,0.0]]
+			prototype += [[1.0,1.0,1.0,1.0]]
 		prototypes += [prototype]
 	return prototypes
 
@@ -135,6 +135,8 @@ def cluster (peaks, means, alignmentMatrix):
 	clusters = []
 	currAssignments = [0] * len(peaks)
 	prevAssignments = list(currAssignments)
+	n = 1
+	print 'cluster run 1'
 	(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 	# print clusters[1][0]
 	means = recenter(clusters,prototypes)
@@ -142,6 +144,8 @@ def cluster (peaks, means, alignmentMatrix):
 	while not termination(prevAssignments,currAssignments):
 		prevAssignments = list(currAssignments)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
+		n+=1
+		print 'cluster run ' + str(n)
 		(clusters,prototypes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 		# print clusters[1][0]
 		means = recenter(clusters,prototypes)

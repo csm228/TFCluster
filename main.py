@@ -80,10 +80,10 @@ def main (peaks):
 	print 'first runthrough of clustering'
 	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
-	(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
 	print 'starting welch\'s t-test clustering with centroid means'
+	(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
 	while p_val < probabilityThreshold:
-		# means = paring.paredMeans(means)
+		means = paring.paredMeans(means)
 		numNewMeans = guessNewMeans(peaks, means, p_val)
 		#currently, no correlation between how many means duplicated/dropped in paring
 		#and how many and from where they are added in mean picking

@@ -112,7 +112,7 @@ def pickMeans (peaks, numMeans):
 #Assumes that the initial mean guess won't be larger that the number of peaks
 #May implement so that it is the only function to use subsampling,
 # assumes the initial k guess will reduce the number of sequences in any cluster significantly
-def pickInitMeans (peaks, numMeans):\
+def pickInitMeans (peaks, numMeans):
 	return pickMeans(peaks, numMeans)
 
 # def pickInitMeans (peaks, numMeans):

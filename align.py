@@ -6,7 +6,7 @@ wordLength = 5
 highScoreThreshold = 4
 
 #Distance that two words must be under to group into a segment pair
-segPairWordMaxDist = 8
+segPairWordMaxDist = 11
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def compare (character, probArray):
@@ -21,10 +21,11 @@ def compare (character, probArray):
 	else:
 		print "Incorrect string in peaks, implement error handling"
 
+#assume both have the same length, generally = wordLength
 def scorePair (seqWord,meanWord):
 	#if misalignments become an issue, use weighted mean?
 	score = 0
-	for i in range(wordLength):
+	for i in range(len(seqWord)):
 		score += compare(seqWord[i], meanWord[i])
 	return score
 
@@ -66,10 +67,16 @@ def align (peak, meanWords):
 				dist = abs(i1-i2)
 				if (dist < segPairWordMaxDist) and (i1 - i2 + j2 == j1):
 					segScore = 0
-					for m in range(dist):
-						segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
-					# 	print segScore
-					# print '\n'
+					# for m in range(dist):
+					# 	segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
+					peakSeg = peak[0][i1:i2+wordLength]
+					meanSeg = meanWords[j]
+					for j in range(j1,j2+1):
+						print j
+						meanSeg += [meanWords[j][wordLength-1]]
+					print meanSeg
+					#So now, doesn't double-count characters in the center
+					segScore = scorePair(peakSeg,meanSeg)
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		# print segmentPairs[0]

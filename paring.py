@@ -6,7 +6,7 @@ wordLength = 5
 highScoreThreshold = 3
 
 #Distance that two words must be under to group into a segment pair
-segPairWordMaxDist = 8
+segPairWordMaxDist = 12
 
 #How far around the high score segment should be included?
 paringBufferLength = 2
