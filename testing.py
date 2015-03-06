@@ -21,19 +21,22 @@ peak6 = ['CGTATTATCTTTCGTTTGTCTTATCGTTTCTTATTTCGCGCGATTCTAGCTTATGCTATTGCTA',5]
 mean1 = []
 meanWords1 = []
 
-def test_seed_abstraction():
+def test_seed_abstraction1():
 	print 'seed: ' + str(peak1)
 	mean1 = seed.abstract(peak1)
 	print 'abstracted seed: ' + str(mean1)
 	return mean1
 
-def test_wordification():
+def test_wordification1():
 	# print 'mean: ' + str(mean1)
 	meanWords1 = align.wordify(mean1)
 	# print 'mean words: ' + str(meanWords1)
 	return meanWords1
 
-def test_align():
+def test_align(peak1, peak2):
+	print align.align(peak1,align.wordify(seed.abstract(peak2)))
+
+def test_align1():
 	print 'peak: ' + str(peak1)
 	print 'mean: ' + str(mean1)
 	(i, score) = align.align(peak1,meanWords1)
@@ -47,13 +50,15 @@ def test_pickInitMeans():
 
 
 print ['test_start \n']
-mean1 = test_seed_abstraction()
+# mean1 = test_seed_abstraction()
+# print '\n'
+# meanWords1 = test_wordification()
+# print '\n'
+test_align(peak1,peak1)
+test_align(peak2,peak2)
+test_align(peak3,peak3)
 print '\n'
-meanWords1 = test_wordification()
-print '\n'
-test_align()
-print '\n'
-test_pickInitMeans()
+# test_pickInitMeans()
 # input_loc = str(sys.argv[1])
 # output_loc = str(sys.argv[2])
 # out.writeOutput(output_loc, main.main(load.process_Generated(input_loc)))

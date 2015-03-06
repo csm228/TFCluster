@@ -70,17 +70,15 @@ def align (peak, meanWords):
 					# for m in range(dist):
 					# 	segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
 					peakSeg = peak[0][i1:i2+wordLength]
-					meanSeg = meanWords[j]
-					for j in range(j1,j2+1):
-						print j
-						meanSeg += [meanWords[j][wordLength-1]]
-					print meanSeg
+					meanSeg = []
+					#This could reaaaally use MEMOIZATION
+					for j in range(j1,j2):
+						meanSeg += [meanWords[j][0]]
+					meanSeg += meanWords[j2]
 					#So now, doesn't double-count characters in the center
 					segScore = scorePair(peakSeg,meanSeg)
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
-		# print segmentPairs[0]
-		# print 'segpair^\n'
 		if len(segmentPairs) > 0:
 			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)
 			return segmentPairs[0]
