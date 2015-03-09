@@ -21,20 +21,47 @@ def minScore (peak, meanWordsList):
 		minVal = min(minVal, align.score_of_align(peak,meanWords))
 	return minVal
 
-def kPlusPlus (means, peaks):
+#Finds the distance to the closest mean for each peak,
+#by comparing the distance to the newest mean with the value
+#for closest mean distance memoized from the previous run
+def newPeakDistances (mean,peaks,peakDistances):
+	meanWords = align.wordify(mean)
+	for i in range(len(peakDistances)):
+		score = align.score_of_align(peaks[i],meanWords)
+		peakDistances[i] = max(peakDistances[i],score)
+	return peakDistances
+
+#Finds the peak farthest from the current set of means
+def kPlusPlus (means, peaks, peakDistances):
 	print "kPlusPlus"
-	meanWordsList = []
-	for mean in means:
-		meanWordsList += [align.wordify(mean)]
+	newestMean = means[len(means)-1]
+	peakDistances = newPeakDistances(newestMean,peaks,peakDistances)
 	seedIndex = 0
-	minVal = minScore(peaks[0], meanWordsList)
+	minVal = peakDistances[0]
 	for i in range(1,len(peaks)):
 		#Bias? should this be randomized instead?
-		tempScore = minScore(peaks[i], meanWordsList)
+		tempScore = peakDistances[i]
 		if tempScore < minVal:
 			minVal = tempScore
 			seedIndex = i
-	return (peaks.pop(seedIndex),peaks)
+	seed = peaks.pop(seedIndex)
+	peakDistances.pop(seedIndex)
+	return (seed,peaks,peakDistances)
+
+# def kPlusPlus (means, peaks):
+# 	print "kPlusPlus"
+# 	meanWordsList = []
+# 	for mean in means:
+# 		meanWordsList += [align.wordify(mean)]
+# 	seedIndex = 0
+# 	minVal = minScore(peaks[0], meanWordsList)
+# 	for i in range(1,len(peaks)):
+# 		#Bias? should this be randomized instead?
+# 		tempScore = minScore(peaks[i], meanWordsList)
+# 		if tempScore < minVal:
+# 			minVal = tempScore
+# 			seedIndex = i
+# 	return (peaks.pop(seedIndex),peaks)
 
 # The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
@@ -100,12 +127,16 @@ def pickMeans (peaks, numMeans):
 			subSample += [thisPeak]
 		#Now we create the list of new means
 		seeds = []
-		(seed, subSample) = sample(subSample)
-		seeds += [abstract(seed)]
+		(peak, subSample) = sample(subSample)
+		seed = abstract(peak)
+		#Instantiate peakDistances so that the first alignment will always be better,
+		#and replace the original value as the closest peak, so that the peak farthest from any is chosen next
+		peakDistances = [0]*len(subSample)
+		seeds += [seed]
 		#PLEASE FIX numMeans guesses and index errors!!!!
 		if numMeans > 1:
 			for i in range(numMeans - 1):
-				(seed, subSample) = kPlusPlus(seeds,subSample)
+				(seed, subSample, peakDistances) = kPlusPlus(seeds,subSample,peakDistances)
 				seeds += [abstract(seed)]
 		return seeds
 

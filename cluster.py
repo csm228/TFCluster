@@ -20,7 +20,7 @@ def initializePrototypes(means):
 		#The prototypical mean, generated during allocation
 		prototype = []
 		for n in range(len(means[m])):
-			#for now, to try and prevent null means, also try [0.0,0.0,0.0,0.0]
+			#for now, to try and prevent null means.
 			# prototype += [[0.0,0.0,0.0,0.0]]
 			prototype += [[1.0,1.0,1.0,1.0]]
 		prototypes += [prototype]
@@ -64,7 +64,7 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 		maxScore = 0
 		alignmentIndex = 0
 		for j in range(len(means)):
-			(index,score) = alignmentMatrix[i][j]
+			(index,score,length) = alignmentMatrix[i][j]
 			#How to resolve ties?
 			if score > maxScore:
 				maxScore = score
