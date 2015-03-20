@@ -28,12 +28,12 @@ def guessNewMeans(peaks, means, p_val):
 
 
 # try storing prev. cluster variance? - in main
-def variance (cluster,j,alignmentMatrix):
+def variance (cluster,meanNum,alignmentMatrix):
 	sumVar = 0
 	meanLength = len(cluster[0])
 	for peak in cluster[1:]:
 		peakNum = peak[1]
-		(i,score) = alignmentMatrix[peakNum][j]
+		(i,score,length) = alignmentMatrix[peakNum][meanNum]
 		#This definition of distance is kinda inconsistent -
 		# alignment gives word and segment scores, not whole sequence alignments
 		sumVar += (meanLength - score)**2
@@ -79,17 +79,18 @@ def main (peaks):
 	clusterVariances = [0]*5 #just something so that the first Welch's test doesn't cause termination
 	print 'first runthrough of clustering'
 	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
-	alignmentMatrix = align.generate_align_matrix(peaks,means)
+	varAlignmentMatrix = align.generate_align_matrix(peaks,means)
 	print 'starting welch\'s t-test clustering with centroid means'
 	(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
 	while p_val < probabilityThreshold:
-		means = paring.paredMeans(means)
+		means = paring.paredMeans(means,clusters,alignmentMatrix)
 		numNewMeans = guessNewMeans(peaks, means, p_val)
 		#currently, no correlation between how many means duplicated/dropped in paring
 		#and how many and from where they are added in mean picking
 		means += seed.pickNewMeans(clusters, numNewMeans, clusterVariances)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
 		(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
+		varAlignmentMatrix = align.generate_align_matrix(peaks,means)
 		(p_val, clusterVariances) = welchTest(clusters,alignmentMatrix,clusterVariances)
 		print 'finished clustering of subsequent k guess'
 	return clusters

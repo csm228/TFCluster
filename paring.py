@@ -38,7 +38,21 @@ def processSegments(segments, mean):
 	return newMeans
 
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
-def pare(mean):
+#Now uses mean alignment length to guess length and position of new means
+def pare((mean, targetLength), meanNum, cluster, alignmentMatrix):
+	lengthAlignments = []
+	sumVar = 0
+	numPeaks = len(cluster)-1
+	for l in range(numPeaks):
+		peakNum = cluster[l+1][1]
+		(i,score,length) = alignmentMatrix[peakNum][meanNum]
+		lengthAlignments += (i,score,length)
+		#Odd artifact here, the targetLength is from alignments on the previous clustering,
+		# so they don't match the new score. Take out the extra alignmentMatrix generation?
+		sumVar += 
+
+#Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
+def originalPare(mean):
 	meanWords = wordify(mean)
 	numMeanWords = len(meanWords)
 	scores = []
@@ -63,14 +77,16 @@ def pare(mean):
 	#Segments need to turn into means that account for buffer distances and the length of meanWords
 	return processSegments(segments, mean)
 
-#Try paring without meanWords?
-def pare2(mean):
-	return
-
 
 #Currently the algorithm pares every mean every iteration, maybe too much?
-def paredMeans(means):
+def paredMeans(means,clusters,alignmentMatrix):
 	newMeans = []
-	for mean in means:
-		newMeans += pare(mean)
+	for j in range(len(means)):
+		newMeans += pare(means[j],j,clusters[j+1],alignmentMatrix)
 	return newMeans
+
+# def paredMeans(means,alignmentMatrix):
+# 	newMeans = []
+# 	for mean in means:
+# 		newMeans += originalPare(mean)
+# 	return newMeans

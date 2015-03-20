@@ -14,6 +14,8 @@ def sample (peaks):
 	index = random.randrange(len(peaks))
 	return (peaks.pop(index),peaks)
 
+# "Deprecated" - not used anymore due to memoization in kPlusPlus
+# returns the minimum score 
 def minScore (peak, meanWordsList):
 	#align gives a tuple of index, score, so take the score
 	minVal = align.score_of_align(peak, meanWordsList[0])
@@ -27,7 +29,8 @@ def minScore (peak, meanWordsList):
 def newPeakDistances (mean,peaks,peakDistances):
 	meanWords = align.wordify(mean)
 	for i in range(len(peakDistances)):
-		score = align.score_of_align(peaks[i],meanWords)
+		#score_of_align needs targetLength now, -1 for inconsequential
+		score = align.score_of_align(peaks[i],meanWords,-1)
 		peakDistances[i] = max(peakDistances[i],score)
 	return peakDistances
 
@@ -102,12 +105,13 @@ def initProb (character):
 # 	print "Incorrect string in peaks, implement error handling"
 
 #abstracts a peak seed into a mean
+#CAREFUL, currently the only thing with action adding mean length
 def abstract (peak):
 	seq = peak[0]
 	matrix = []
 	for character in seq:
 		matrix += [initProb(character)]
-	return matrix
+	return (matrix, -1)
 
 # picks a subsample from peaks, 
 # then picks seed means from that by k++ w/o replacement
