@@ -170,6 +170,7 @@ def pickNewMeans (clusters, numMeans, clusterVariances):
 	if numMeans > numOutliers:
 		means += pickMeans(outliers, numOutliers)
 		numMeans -= numOutliers
+		#finds the highest variance cluster and it's index
 		prevClusterVariances = list(enumerate(list(clusterVariances)))
 		prevClusterVariances.sort(key = lambda seg: seg[1])
 		while numMeans > 0:

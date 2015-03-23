@@ -68,7 +68,7 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 		alignmentIndex = 0
 		alignmentLength = 0
 		for j in range(len(means)):
-			(index,score,length) = alignmentMatrix[i][j]
+			(index,motifIndex,score,length) = alignmentMatrix[i][j]
 			#How to resolve ties?
 			if score > maxScore:
 				maxScore = score

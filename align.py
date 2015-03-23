@@ -84,7 +84,7 @@ def align (peak, meanWords, targetLength):
 						#accounting for length
 						multiplier = (targetLength - (targetLength-(float(dist)))**2)/targetLength
 						segScore *= multiplier
-					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore,dist)]
+					segmentPairs += [(min(j1,j2)-min(i1,i2),min(i1,i2),segScore,dist)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		if len(segmentPairs) > 0:
 			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)
@@ -95,8 +95,8 @@ def align (peak, meanWords, targetLength):
 			#accounting for length
 			multiplier = (targetLength - (targetLength-(float(dist)))**2)/targetLength
 			score *= multiplier
-		return (j-i,score,wordLength)
-	return (0,0,0)
+		return (j-i,i,score,wordLength)
+	return (0,0,0,0)
 
 
 # def align_mean (peak, mean):
@@ -105,11 +105,11 @@ def align (peak, meanWords, targetLength):
 #kinda sad functions, index is only used in recentering,
 # and only the score is used everywhere else: so separate them entirely?
 def index_of_align(peak, meanWords, targetLength):
-	(i,score,length) = align(peak,meanWords)
+	(i,m,score,length) = align(peak,meanWords)
 	return i
 
 def score_of_align(peak, meanWords, targetLength):
-	(i,score,length) = align(peak,meanWords)
+	(i,m,score,length) = align(peak,meanWords)
 	return score
 
 
@@ -130,15 +130,14 @@ def generate_align_matrix(peaks,means):
 
 #An alignment matrix for variance and mean paring calculations
 def generate_var_align_matrix(clusters):
-	meanWordsList = []
-	for (mean,targetLength) in means:
-		meanWordsList += [(wordify(mean),targetLength)]
 	alignmentMatrix = []
-	for i in range(len(peaks)):
-		peak = peaks[i]
+	for j in range(len(clusters)-1):
+		cluster = clusters[j+1]
+		(mean,targetLength) = cluster[0]
+		meanWords = wordify(mean)
 		peakAlignments = []
-		for j in range(len(means)):
-			(meanWords,targetLength) = meanWordsList[j]
+		for i in range(len(cluster)-1):
+			peak = cluster[i+1]
 			peakAlignments += [align(peak,meanWords,targetLength)]
 		alignmentMatrix += [peakAlignments]
 	return alignmentMatrix
