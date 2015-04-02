@@ -23,7 +23,7 @@ def initializePrototypes(means):
 		for n in range(len(mean)):
 			#for now, to try and prevent null means.
 			# prototype += [[0.0,0.0,0.0,0.0]]
-			prototype += [[1.0,1.0,1.0,1.0]]
+			prototype += [[0.25,0.25,0.25,0.25]]
 		prototypes += [prototype]
 	return prototypes
 
@@ -95,7 +95,6 @@ def difference (prevMean, currMean):
 	return diff
 
 
-#DONE BEEN CANNABILIZED :P
 #if recentered mean moves from seed (previous mean), throw out and pick only from outliers
 #recenter on the fly: store number in cluster and just add then average??
 #The calculation step of the "centroids" of the clusters
@@ -120,15 +119,17 @@ def recenter (clusters, prototypes, prototypeLengths):
 				total += prob
 			for p in range(4):
 				loc[p] = loc[p] / total
-		#Here is where highly variant means should be thrown out,
-		#but need to allow for the first run with a mean - 
-		# the seed will always have high change
-		clusters[j][0] = prototype
 		#now get the mean alignment length
 		numPeaks = len(clusters[j])-1
-		prototypeLength = prototypeLengths[j-1] / float(numPeaks)
-		#add the new mean
-		means += [(prototype,prototypeLength]
+		prototypeLength = prototypeLengths[j-1]
+		if numPeaks > 0:
+			prototypeLength /= float(numPeaks)
+		#Here may be where highly variant means should be thrown out, (before adding new means)
+		#but need to allow for the first run with a mean - 
+		# the seed will always have high change in variance on the first run
+		#ALSO, easier not to change cluster structure before recentering
+		clusters[j][0] = (prototype,prototypeLength)
+		means += [(prototype,prototypeLength)]
 	return means
 
 #perhaps REPLACE THIS with a boolean during alignment
@@ -150,7 +151,7 @@ def cluster (peaks, means, alignmentMatrix):
 	print 'cluster run 1'
 	(clusters,prototypes,prototypeLengths) = allocate(peaks,means,alignmentMatrix,currAssignments)
 	# print clusters[1][0]
-	means = recenter(clusters,prototypes,prototypeLengths,alignmentMatrix)
+	means = recenter(clusters,prototypes,prototypeLengths)
 	# print means[0]
 	while not termination(prevAssignments,currAssignments):
 		prevAssignments = list(currAssignments)
@@ -161,5 +162,6 @@ def cluster (peaks, means, alignmentMatrix):
 		# print clusters[1][0]
 		means = recenter(clusters,prototypes,prototypeLengths)
 	#WIERD to be returning alignmentMatrix &  currAssignments b\c they're one step out of date
+	# print means[0]
 	return (means,clusters)
 

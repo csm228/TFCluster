@@ -35,7 +35,7 @@ def variance (cluster,meanNum,varAlignmentMatrix):
 		# alignment gives word and segment scores, not whole sequence alignments
 		sumVar += (meanLength - score)**2
 	n = len(cluster) - 1
-	if n != len(alignmentMatrix[meanNum]):
+	if n != len(varAlignmentMatrix[meanNum]):
 		print "the number of peaks in the cluster doesn\'t match the number of alignments - invariant invalidity"
 	if n > 0:
 		#Integer division is "//" while "/" does floating point
@@ -97,7 +97,7 @@ def main (peaks):
 	clusterVariances = [0]*5 #just something so that the first Welch's test doesn't cause termination
 	print 'first runthrough of clustering'
 	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
-	varAlignmentMatrix = align.generate_var_align_matrix(peaks,means)
+	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'starting welch\'s t-test clustering with centroid means'
 	(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
 	while p_val < probabilityThreshold:

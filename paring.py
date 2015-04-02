@@ -8,13 +8,13 @@ wordLength = 5
 highScoreThreshold = 3
 
 #Distance that two words must be under to group into a segment pair
-segPairWordMaxDist = 12
+segPairWordMaxDist = 13
 
 #How far around the high score segment should be included?
-paringBufferLength = 2
+paringBufferLength = 3
 
 #How large of a standard deviation in mean alignment length should cause paring?
-paringDevAllowance = 1.5
+paringDevAllowance = 1.0
 
 #How much difference from the mode length should be removed?
 paringLengthSimilarity = 1
@@ -34,19 +34,21 @@ def scoreMeanWord(meanWord):
 	return score
 
 #Perhaps account for small gaps in a single motif here?
-#Returns means from the paring data
+#Returns means from the paring data, modified for targetLength addition
 def processSegments(segments, mean):
 	print segments
 	newMeans = []
 	for (score,i,j) in segments:
 		i1 = max(0, i - paringBufferLength)
 		i2 = min(len(mean),j+wordLength+paringBufferLength)
-		newMeans += [mean[i1:i2]]
+		#Modified line - reboxing for output with alignment length
+		newMeans += [(mean[i1:i2],-1)]
 	# print str(newMeans) + '\n'
 	return newMeans
 
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
-def originalPare(mean):
+#Modified for use with (sequence, score) means - unboxing and return type
+def originalPare((mean,targetLength)):
 	meanWords = wordify(mean)
 	numMeanWords = len(meanWords)
 	scores = []
@@ -59,7 +61,7 @@ def originalPare(mean):
 		if scores[i] > highScoreThreshold:
 			currSegScore = 0
 			j = 0
-			#FIX THIS - what if there is a non-high score word in the middle of a motif?
+			#FIX THIS - what if there is a non-high score word in the middle of a motif? (actually, that's pretty unlikely)
 			while j < segPairWordMaxDist and i+j < numMeanWords and scores[i+j] > highScoreThreshold:
 				currSegScore += scores[i+j]
 				j += 1
@@ -87,12 +89,11 @@ def lengthVar(lengths):
 	sumLengths = 0
 	for length in lengths:
 		sumLengths += length
-		lengths += [length]
-	avgLength = sumLengths/float(numPeaks)
+	avgLength = sumLengths/float(numLengths)
 	sumVar = 0
-	for (i,m,score,length) in lengthAlignments:
-		sumVar += (avgLength + float(length))**2
-	lengthVariance = sumVar / float(numPeaks)
+	for length in lengths:
+		sumVar += (avgLength - float(length))**2
+	lengthVariance = sumVar / float(numLengths)
 	return lengthVariance
 
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
@@ -102,7 +103,7 @@ def pare((mean, targetLength), lengthAlignments):
 	#Odd artifact here, the targetLength is from alignments on the previous clustering,
 	# so they don't match the new score. Take out the extra alignmentMatrix generation?
 	#FIXED with summing new memoized alignments, but may want to check this
-	numPeaks = len(cluster)-1
+	numPeaks = len(lengthAlignments)
 	if numPeaks <= 0:
 		return []
 	lengths = []
@@ -110,34 +111,54 @@ def pare((mean, targetLength), lengthAlignments):
 		lengths += [length]
 	stdDev = math.sqrt(lengthVar(lengths))
 	newMeans = []
-	#Currently this DOESN'T EVEN CHECK TARGETLENGTH
+	#Currently this DOESN'T check or utilize TARGETLENGTH
+	if stdDev <= paringLengthSimilarity:
+		modeLength = max(set(lengths), key=lengths.count)
+		l = 0
+		while 0 <= l < numPeaks:
+			(i,m,score,length) = lengthAlignments[l]
+			if length == modeLength:
+				newMeans += [(processAlignment(lengthAlignments[l],mean),-1)]
+				l = -1
+			else:
+				l += 1
+		return newMeans
 	while stdDev >= paringDevAllowance:
 		#finds the most common length, the mode
 		modeLength = max(set(lengths), key=lengths.count)
+		#Temp value, selectedAlignment should always be changed, as something has the mode length
 		selectedAlignment = (0,0,0,0)
+		k = 0
 		while k < len(lengthAlignments):
 			#length = lengths[i]
-			(i,m,score,length) = lengthAlignments[i]
+			(i,m,score,length) = lengthAlignments[k]
 			if length == modeLength:
-				selectedAlignment = lengthAlignments.pop(i)
-				lengths.pop(i)
+				#removes the values for a second iteration
+				selectedAlignment = lengthAlignments.pop(k)
+				lengths.pop(k)
+			elif length - paringLengthSimilarity <= length <= length + paringLengthSimilarity:
+				#removes close lengths too
+				lengthAlignments.pop(k)
+				lengths.pop(k)
 			else:
 				k += 1
-		newMeans += [processAlignment(selectedAlignment,mean)]
+		newMeans += [(processAlignment(selectedAlignment,mean),-1)]
 		if len(lengthAlignments) <= 0:
 			return newMeans
 		stdDev = math.sqrt(lengthVar(lengths))
 	return newMeans
 
-#Currently the algorithm pares every mean every iteration, maybe too much?
-def paredMeans(means,varAlignmentMatrix):
-	newMeans = []
-	for j in range(len(means)):
-		newMeans += pare(means[j],alignmentMatrix[j])
-	return newMeans
-
-# def paredMeans(means,alignmentMatrix):
+# #Currently the algorithm pares every mean every iteration, maybe too much?
+# def paredMeans(means,varAlignmentMatrix):
 # 	newMeans = []
-# 	for mean in means:
-# 		newMeans += originalPare(mean)
+# 	for j in range(len(means)):
+# 		#make sure the pare function doesn't change the alignment matrix
+# 		newMeans += pare(means[j],list(varAlignmentMatrix[j]))
 # 	return newMeans
+
+#Uses originalPare, but unboxes 
+def paredMeans(means,alignmentMatrix):
+	newMeans = []
+	for mean in means:
+		newMeans += originalPare(mean)
+	return newMeans

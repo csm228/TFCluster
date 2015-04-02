@@ -3,10 +3,10 @@
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words
-highScoreThreshold = 4
+highScoreThreshold = 3.8
 
 #Distance that two words must be under to group into a segment pair
-segPairWordMaxDist = 11
+segPairWordMaxDist = 12
 
 #The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def compare (character, probArray):
@@ -79,23 +79,28 @@ def align (peak, meanWords, targetLength):
 						meanSeg += [meanWords[j][0]]
 					meanSeg += meanWords[j2]
 					#So now, doesn't double-count characters in the center
+					# print peakSeg
+					# print meanSeg
 					segScore = scorePair(peakSeg,meanSeg)
+					# print segScore
 					if targetLength > 0:
 						#accounting for length
-						multiplier = (targetLength - (targetLength-(float(dist)))**2)/targetLength
+						multiplier = (targetLength - (targetLength-(float(dist+wordLength)))**2)/targetLength
 						segScore *= multiplier
-					segmentPairs += [(min(j1,j2)-min(i1,i2),min(i1,i2),segScore,dist)]
+					segmentPairs += [(min(j1,j2)-min(i1,i2),min(j1,j2),segScore,dist+wordLength)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		if len(segmentPairs) > 0:
-			segmentPairs.sort(key = lambda seg: seg[1], reverse=True)
+			# print segmentPairs
+			segmentPairs.sort(key = lambda seg: seg[2], reverse=True)
+			# print segmentPairs
 			return segmentPairs[0]
 		highScoreWords.sort(reverse=True)
 		(score,i,j) = highScoreWords[0]
 		if targetLength > 0:
 			#accounting for length
-			multiplier = (targetLength - (targetLength-(float(dist)))**2)/targetLength
+			multiplier = (targetLength - (targetLength-(float(wordLength)))**2)/targetLength
 			score *= multiplier
-		return (j-i,i,score,wordLength)
+		return (j-i,j,score,wordLength)
 	return (0,0,0,0)
 
 
@@ -105,11 +110,11 @@ def align (peak, meanWords, targetLength):
 #kinda sad functions, index is only used in recentering,
 # and only the score is used everywhere else: so separate them entirely?
 def index_of_align(peak, meanWords, targetLength):
-	(i,m,score,length) = align(peak,meanWords)
+	(i,m,score,length) = align(peak,meanWords,targetLength)
 	return i
 
 def score_of_align(peak, meanWords, targetLength):
-	(i,m,score,length) = align(peak,meanWords)
+	(i,m,score,length) = align(peak,meanWords,targetLength)
 	return score
 
 
@@ -133,6 +138,7 @@ def generate_var_align_matrix(clusters):
 	alignmentMatrix = []
 	for j in range(len(clusters)-1):
 		cluster = clusters[j+1]
+		# print cluster[0]
 		(mean,targetLength) = cluster[0]
 		meanWords = wordify(mean)
 		peakAlignments = []

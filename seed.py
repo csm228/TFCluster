@@ -18,7 +18,7 @@ def sample (peaks):
 # returns the minimum score 
 def minScore (peak, meanWordsList):
 	#align gives a tuple of index, score, so take the score
-	minVal = align.score_of_align(peak, meanWordsList[0])
+	minVal = align.score_of_align(peak, meanWordsList[0],-1)
 	for meanWords in meanWordsList[1:]:
 		minVal = min(minVal, align.score_of_align(peak,meanWords))
 	return minVal
@@ -34,6 +34,8 @@ def newPeakDistances (mean,peaks,peakDistances):
 		peakDistances[i] = max(peakDistances[i],score)
 	return peakDistances
 
+#As an alternative, generate all possible sequences of a given length (7?), run k++ on the most common, then select representative sequences
+
 #Finds the peak farthest from the current set of means
 def kPlusPlus (means, peaks, peakDistances):
 	print "kPlusPlus"
@@ -48,6 +50,7 @@ def kPlusPlus (means, peaks, peakDistances):
 			minVal = tempScore
 			seedIndex = i
 	seed = peaks.pop(seedIndex)
+	# print seed
 	peakDistances.pop(seedIndex)
 	return (seed,peaks,peakDistances)
 
