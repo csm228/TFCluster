@@ -39,10 +39,12 @@ def abstract (peak):
 
 def pickTwo(peaks):
 	numPeaks = len(peaks)
+	# print peaks
 	if numPeaks > 1:
 		index = random.randrange(numPeaks)
 		seed1 = abstract(peaks[index])
-		meanWords = align.wordify(seed1)
+		# print seed1
+		meanWords = align.wordify(seed1[0])
 		#Pick randomly? Take one that aligns something else? (one-off)
 		farthest = 0
 		farthestScore = align.score_of_align(peaks[0],meanWords,-1)
@@ -53,6 +55,8 @@ def pickTwo(peaks):
 				farthestScore = score
 				farthest = i
 		seed2 = abstract(peaks[farthest])
+		print seed1
+		print seed2
 		return [seed1, seed2]
 	# elif numPeaks == 1:
 	# 	return [abstract(peaks[0])]
@@ -118,12 +122,11 @@ def welchTest (currClusters,alignmentMatrix,prevClusterVariances):
 
 def alignmentWelchTest(currClusters,varAlignmentMatrix,prevClusterScores):
 	currClusterScores1 = []
-	print varAlignmentMatrix[0]
+	print varAlignmentMatrix
 	for (i,m,score,length) in varAlignmentMatrix[0]:
 		currClusterScores1 += [score]
 	print currClusterScores1
 	(t_stat1,p_val1) = scipy.stats.ttest_ind(prevClusterScores, currClusterScores1, equal_var = False)
-	print varAlignmentMatrix[1]
 	currClusterScores2 = []
 	for (i,m,score,length) in varAlignmentMatrix[1]:
 		currClusterScores2 += [score]
@@ -145,23 +148,23 @@ def clustrifyMeans (means):
 def bifurcate (cluster, prevClusterScore):
 	numPeaks = len(cluster) - 1
 	if numPeaks == 1:
-		return [[abstract(peaks[0]),peaks[0]]]
+		return [[abstract(cluster[1]),cluster[1]]]
 	if numPeaks == 0:
 		return []
 	peaks = cluster[1:]
 	means = pickTwo(peaks)
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
-	clusters = [peaks] + clustrifyMeans(means)
+	clusters = clustrifyMeans(means)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
 	(means,clusters) = clustering.cluster(peaks,means,alignmentMatrix)
 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'finished a binary branching'
-	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
-	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
+	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,prevClusterVariance)
+	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,prevClusterScore)
 	if p_val > probabilityThreshold:
 		return [cluster]
 	else:
-		binaryClusters = main(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
+		binaryClusters = bifurcate(clusters[0],clusterScores[0]) + bifurcate(clusters[1],clusterScores[1])
 		return binaryClusters
 
 #SO MUCH MEMOIZATION
@@ -174,16 +177,15 @@ def main (peaks):
 	if numPeaks == 0:
 		return []
 	means = pickTwo(peaks)
-	print peaks[0]
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
-	clusters = [peaks] + clustrifyMeans(means)
+	clusters = clustrifyMeans(means)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
 	prevClusterScore = [0]*numPeaks #just something so that the first Welch's test doesn't cause termination
 	(means,clusters) = clustering.cluster(peaks,means,alignmentMatrix)
 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'finished an outlier clustering (main)'
-	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
-	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
+	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,prevClusterVariance)
+	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,prevClusterScore)
 	# if p_val > probabilityThreshold:
 	# 	means = paring.paredMeans(means,varAlignmentMatrix)
 	# 	numNewMeans = guessNewMeans(peaks, means, p_val)
