@@ -52,7 +52,7 @@ def account(peak, prototype, i):
 #Now also adds to the prototypical means for the recentering step
 def allocate (peaks, means, alignmentMatrix, assignments):
 	#Outliers are stored in the first cluster (list) in clusters
-	clusters = [[]]
+	clusters = []
 	prototypeLengths = []
 	for mean in means:
 		clusters += [[mean]]
@@ -75,10 +75,11 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 				alignmentIndex = index
 				alignmentLength = length
 		if maxScore <= outlierThreshold:
+			print "just threw an outlier - shouldn't happen if align gives > 0"
 			group(peaks[i], i, 0, clusters, assignments)
 		else:
-			#grouping needs nearest+1 because 0 is the outliers
-			group(peaks[i], i, nearest+1, clusters, assignments)
+			#grouping needs nearest because no outliers
+			group(peaks[i], i, nearest, clusters, assignments)
 			account(peaks[i], prototypes[nearest], alignmentIndex)
 			prototypeLengths[nearest] += alignmentLength
 	return (clusters, prototypes, prototypeLengths)
@@ -99,9 +100,9 @@ def difference (prevMean, currMean):
 #The calculation step of the "centroids" of the clusters
 def recenter (clusters, prototypes, prototypeLengths):
 	means = []
-	for j in range(1,len(clusters)):
+	for j in range(len(clusters)):
 		# print clusters[j][0]
-		prototype = prototypes[j-1] #take out the outlier cluster
+		prototype = prototypes[j]
 		for loc in prototype:
 			total = 0
 			for prob in loc:
@@ -120,7 +121,7 @@ def recenter (clusters, prototypes, prototypeLengths):
 				loc[p] = loc[p] / total
 		#now get the mean alignment length
 		numPeaks = len(clusters[j])-1
-		prototypeLength = prototypeLengths[j-1]
+		prototypeLength = prototypeLengths[j]
 		if numPeaks > 0:
 			prototypeLength /= float(numPeaks)
 		#Here may be where highly variant means should be thrown out, (before adding new means)

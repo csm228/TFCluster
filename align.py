@@ -47,6 +47,7 @@ def align (peak, meanWords, targetLength):
 	seqWords = wordify(peak[0])
 	scoreMatrix = []
 	highScoreWords = []
+	nonHighScoreWords = []
 	for i in range(len(seqWords)):
 		scores = []
 		for j in range(len(meanWords)):
@@ -54,6 +55,8 @@ def align (peak, meanWords, targetLength):
 			scores += [score]
 			if score > highScoreThreshold:
 				highScoreWords += [(score,i,j)]
+			else:
+				nonHighScoreWords += [(score,i,j)]
 		scoreMatrix += [scores]
 	# print highScoreWords[0]
 	# print scoreMatrix
@@ -101,8 +104,14 @@ def align (peak, meanWords, targetLength):
 			multiplier = (targetLength - (targetLength-(float(wordLength)))**2)/targetLength
 			score *= multiplier
 		return (j-i,j,score,wordLength)
-	return (0,0,0,0)
-
+	nonHighScoreWords.sort(reverse=True)
+	(score,i,j) = nonHighScoreWords[0]
+	if targetLength > 0:
+		#accounting for length
+		multiplier = (targetLength - (targetLength-(float(wordLength)))**2)/targetLength
+		score *= multiplier
+	return (j-i,j,score,wordLength)
+	
 
 # def align_mean (peak, mean):
 # 	return align(peak, wordify(mean))
@@ -134,10 +143,11 @@ def generate_align_matrix(peaks,means):
 	return alignmentMatrix
 
 #An alignment matrix for variance and mean paring calculations
+#modified for pure binary clustering
 def generate_var_align_matrix(clusters):
 	alignmentMatrix = []
-	for j in range(len(clusters)-1):
-		cluster = clusters[j+1]
+	for j in range(len(clusters)):
+		cluster = clusters[j]
 		# print cluster[0]
 		(mean,targetLength) = cluster[0]
 		meanWords = wordify(mean)
@@ -148,6 +158,7 @@ def generate_var_align_matrix(clusters):
 		alignmentMatrix += [peakAlignments]
 	return alignmentMatrix
 
+# #Non-length sensitive?
 # def generate_align_matrix(peaks,means):
 # 	meanWordsList = []
 # 	for mean in means:

@@ -196,25 +196,5 @@ def main (peaks):
 	# 	(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
 	# 	print 'finished clustering of subsequent k guess'
 	# 	n += 1
-	binaryClusters = main(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
+	binaryClusters = bifurcate(clusters[0],clusterScores[0]) + bifurcate(clusters[1],clusterScores[1])
 	return binaryClusters
-
-def outlierBif (peaks, prevClusterScore):
-	if len(cluster) == 1:
-		return []
-	peaks = cluster[1:]
-	means = pickTwo(peaks)
-	#The extra list at the beginning is for outliers,and is initialized with all peaks
-	clusters = [peaks] + clustrifyMeans(means)
-	alignmentMatrix = align.generate_align_matrix(peaks,means)
-	(means,clusters) = clustering.cluster(peaks,means,alignmentMatrix)
-	print clusters
-	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
-	print 'finished an outlier branching'
-	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
-	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
-	if p_val > probabilityThreshold:
-		return [cluster]
-	else:
-		binaryClusters = outlierBif(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
-		return binaryClusters
