@@ -9,7 +9,7 @@ import main
 import align
 import seed
 import paring
-import cluster
+import clustering
 
 peak1 = ['ATTGCTCTAGCTACGATCTATACTGTACACAAA',0]
 peak2 = ['GCGCGTAATCATTACGTATTTCCGGCGATATCGGGGGG',1]
@@ -20,6 +20,8 @@ peak6 = ['CGTATTATCTTTCGTTTGTCTTATCGTTTCTTATTTCGCGCGATTCTAGCTTATGCTATTGCTA',5]
 
 mean1 = []
 meanWords1 = []
+
+varianceInput1 = ([('a',-1)],0,[[]])
 
 def test_seed_abstraction1():
 	print 'seed: ' + str(peak1)
@@ -50,6 +52,9 @@ def test_pickInitMeans():
 	peaks = [peak1,peak2,peak3,peak4,peak5,peak6]
 	print seed.pickInitMeans(peaks,3)
 
+def test_variance1():
+	(cluster,meanNum,varAlignmentMatrix) = varianceInput1
+	print main.variance(cluster,meanNum,varAlignmentMatrix)
 
 print 'test_start \n'
 mean1 = test_seed_abstraction1()
@@ -60,6 +65,7 @@ test_align(peak1,peak1)
 test_align(peak2,peak2)
 test_align(peak3,peak3)
 print '\n'
+test_variance1()
 # test_pickInitMeans()
 # input_loc = str(sys.argv[1])
 # output_loc = str(sys.argv[2])

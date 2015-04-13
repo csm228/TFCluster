@@ -6,5 +6,5 @@ then
   echo "Usage: $0 <name of generated data> <numPeaks> <numPeaks>"
   exit
 else
-  python motifMaker.py $2 $3 25 55 testData/genPeaks$1
+  python motifMaker.py $2 $3 25 40 testData/genPeaks$1
 fi

@@ -11,7 +11,7 @@ highScoreThreshold = 3
 segPairWordMaxDist = 13
 
 #How far around the high score segment should be included?
-paringBufferLength = 3
+paringBufferLength = 1
 
 #How large of a standard deviation in mean alignment length should cause paring?
 paringDevAllowance = 1.0
@@ -148,7 +148,7 @@ def pare((mean, targetLength), lengthAlignments):
 		stdDev = math.sqrt(lengthVar(lengths))
 	return newMeans
 
-# #Currently the algorithm pares every mean every iteration, maybe too much?
+#Currently the algorithm pares every mean every iteration, maybe too much?
 # def paredMeans(means,varAlignmentMatrix):
 # 	newMeans = []
 # 	for j in range(len(means)):

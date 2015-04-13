@@ -8,10 +8,9 @@ outlierThreshold = 0
 
 #In case the datatype changes, or we want to
 #remember the cluster of the peak by storing it in the peak
-def group (peak, meanIndex, clusters, assignments):
+def group (peak, peakIndex, meanIndex, clusters, assignments):
 	clusters[meanIndex] += [peak]
-	peakNum = peak[1]
-	assignments[peakNum] = meanIndex
+	assignments[peakIndex] = meanIndex
 
 #Generates blank prototypes. Shouldn't be affected by paring
 def initializePrototypes(means):
@@ -21,7 +20,7 @@ def initializePrototypes(means):
 		prototype = []
 		(mean,targetLength) = means[m]
 		for n in range(len(mean)):
-			#for now, to try and prevent null means.
+			#for now, to try and prevent null means. (Laplace's smoothing)
 			# prototype += [[0.0,0.0,0.0,0.0]]
 			prototype += [[0.25,0.25,0.25,0.25]]
 		prototypes += [prototype]
@@ -76,10 +75,10 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 				alignmentIndex = index
 				alignmentLength = length
 		if maxScore <= outlierThreshold:
-			group(peaks[i], 0, clusters, assignments)
+			group(peaks[i], i, 0, clusters, assignments)
 		else:
 			#grouping needs nearest+1 because 0 is the outliers
-			group(peaks[i], nearest+1, clusters, assignments)
+			group(peaks[i], i, nearest+1, clusters, assignments)
 			account(peaks[i], prototypes[nearest], alignmentIndex)
 			prototypeLengths[nearest] += alignmentLength
 	return (clusters, prototypes, prototypeLengths)
@@ -163,5 +162,6 @@ def cluster (peaks, means, alignmentMatrix):
 		means = recenter(clusters,prototypes,prototypeLengths)
 	#WIERD to be returning alignmentMatrix &  currAssignments b\c they're one step out of date
 	# print means[0]
+	print str(clusters) + '\n'
 	return (means,clusters)
 
