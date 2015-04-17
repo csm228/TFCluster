@@ -132,6 +132,7 @@ def generate_align_matrix(peaks,means):
 	meanWordsList = []
 	for (mean,targetLength) in means:
 		meanWordsList += [(wordify(mean),targetLength)]
+	print meanWordsList
 	alignmentMatrix = []
 	for i in range(len(peaks)):
 		peak = peaks[i]

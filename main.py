@@ -12,7 +12,7 @@ from scipy import stats
 
 
 #The p-value to check against to stop the clustering algorithm. Change this
-probabilityThreshold = .6
+probabilityThreshold = .20
 
 # The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
@@ -55,8 +55,8 @@ def pickTwo(peaks):
 				farthestScore = score
 				farthest = i
 		seed2 = abstract(peaks[farthest])
-		print seed1
-		print seed2
+		# print seed1
+		# print seed2
 		return [seed1, seed2]
 	# elif numPeaks == 1:
 	# 	return [abstract(peaks[0])]
