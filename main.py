@@ -12,7 +12,7 @@ from scipy import stats
 
 
 #The p-value to check against to stop the clustering algorithm. Change this
-probabilityThreshold = .6
+probabilityThreshold = .2
 
 # The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
@@ -41,8 +41,12 @@ def pickTwo(peaks):
 	numPeaks = len(peaks)
 	if numPeaks > 1:
 		index = random.randrange(numPeaks)
-		seed1 = abstract(peaks[index])
-		meanWords = align.wordify(seed1)
+		(mean, targetLength) = abstract(peaks[index])
+		seed1 = (mean, targetLength)
+		meanWords = align.wordify(mean)
+		# print meanWords
+		# print peaks[index][0]
+		# print align.align(peaks[index], meanWords, targetLength)
 		#Pick randomly? Take one that aligns something else? (one-off)
 		farthest = 0
 		farthestScore = align.score_of_align(peaks[0],meanWords,-1)
@@ -57,6 +61,7 @@ def pickTwo(peaks):
 	# elif numPeaks == 1:
 	# 	return [abstract(peaks[0])]
 	else:
+		print "pickTwo was run on <= 1 peak, broke invariant"
 		return []
 
 
@@ -101,7 +106,7 @@ def variance (cluster,meanNum,varAlignmentMatrix):
 def stdDev (cluster):
 	return math.sqrt(variance(cluster))
 
-#New with lower momoization costs (only visible in variance calculation)
+
 def welchTest (currClusters,alignmentMatrix,prevClusterVariances):
 	currClusterVariances = [0]
 	for c in range(len(currClusters)-1):
@@ -116,22 +121,53 @@ def welchTest (currClusters,alignmentMatrix,prevClusterVariances):
 	print p_val
 	return (p_val,currClusterVariances)
 
-def alignmentWelchTest(currClusters,varAlignmentMatrix,prevClusterScores):
+#with merging the scores
+def calcClusterScores(currClusters,varAlignmentMatrix):
 	currClusterScores1 = []
-	print varAlignmentMatrix[0]
+	# print varAlignmentMatrix
 	for (i,m,score,length) in varAlignmentMatrix[0]:
 		currClusterScores1 += [score]
-	print currClusterScores1
-	(t_stat1,p_val1) = scipy.stats.ttest_ind(prevClusterScores, currClusterScores1, equal_var = False)
-	print varAlignmentMatrix[1]
+	# print currClusterScores1
 	currClusterScores2 = []
 	for (i,m,score,length) in varAlignmentMatrix[1]:
 		currClusterScores2 += [score]
-	print currClusterScores2
-	(t_stat2,p_val2) = scipy.stats.ttest_ind(prevClusterScores, currClusterScores2, equal_var = False)
-	p_val = (p_val1 * p_val2)
+	# print currClusterScores2
+	return [currClusterScores1,currClusterScores2]
+
+#with merging the scores
+def alignmentWelchTest(currClusters,varAlignmentMatrix,prevClusterScores):
+	currClusterScores1 = []
+	# print varAlignmentMatrix
+	for (i,m,score,length) in varAlignmentMatrix[0]:
+		currClusterScores1 += [score]
+	# print currClusterScores1
+	currClusterScores2 = []
+	for (i,m,score,length) in varAlignmentMatrix[1]:
+		currClusterScores2 += [score]
+	# print currClusterScores2
+	currClusterScores = currClusterScores1 + currClusterScores2
+	print currClusterScores
+	print prevClusterScores
+	(t_stat,p_val) = scipy.stats.ttest_ind(currClusterScores, prevClusterScores, equal_var = False)
 	print p_val
 	return (p_val,[currClusterScores1,currClusterScores2])
+
+# #without merging the scores
+# def alignmentWelchTest(currClusters,varAlignmentMatrix,prevClusterScores):
+# 	currClusterScores1 = []
+# 	print varAlignmentMatrix
+# 	for (i,m,score,length) in varAlignmentMatrix[0]:
+# 		currClusterScores1 += [score]
+# 	# print currClusterScores1
+# 	(t_stat1,p_val1) = scipy.stats.ttest_ind(prevClusterScores, currClusterScores1, equal_var = False)
+# 	currClusterScores2 = []
+# 	for (i,m,score,length) in varAlignmentMatrix[1]:
+# 		currClusterScores2 += [score]
+# 	# print currClusterScores2
+# 	(t_stat2,p_val2) = scipy.stats.ttest_ind(prevClusterScores, currClusterScores2, equal_var = False)
+# 	p_val = (p_val1 * p_val2)
+# 	print p_val
+# 	return (p_val,[currClusterScores1,currClusterScores2])
 
 #temporary initial step for the welch's test (?)
 def clustrifyMeans (means):
@@ -143,12 +179,12 @@ def clustrifyMeans (means):
 	return listifiedMeans
 
 def bifurcate (cluster, prevClusterScore):
-	numPeaks = len(cluster) - 1
+	peaks = cluster[1:]
+	numPeaks = len(peaks)
 	if numPeaks == 1:
 		return [[abstract(peaks[0]),peaks[0]]]
 	if numPeaks == 0:
 		return []
-	peaks = cluster[1:]
 	means = pickTwo(peaks)
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
 	clusters = [peaks] + clustrifyMeans(means)
@@ -157,7 +193,7 @@ def bifurcate (cluster, prevClusterScore):
 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'finished a binary branching'
 	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
-	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
+	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,prevClusterScore)
 	if p_val > probabilityThreshold:
 		return [cluster]
 	else:
@@ -174,16 +210,41 @@ def main (peaks):
 	if numPeaks == 0:
 		return []
 	means = pickTwo(peaks)
-	print peaks[0]
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
 	clusters = [peaks] + clustrifyMeans(means)
 	alignmentMatrix = align.generate_align_matrix(peaks,means)
-	prevClusterScore = [0]*numPeaks #just something so that the first Welch's test doesn't cause termination
+	# prevClusterScore = [0]*numPeaks #just something so that the first Welch's test doesn't cause termination
 	(means,clusters) = clustering.cluster(peaks,means,alignmentMatrix)
 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'finished an outlier clustering (main)'
+	#No longer using welch's test because outliers are assumed to need reclustering?
 	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
-	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
+	# (p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,prevClusterScore)
+	clusterScores = calcClusterScores(clusters,varAlignmentMatrix)
+	binaryClusters = main(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
+	return binaryClusters
+
+# def outlierBif (peaks, prevClusterScore):
+# 	if len(cluster) == 1:
+# 		return []
+# 	peaks = cluster[1:]
+# 	means = pickTwo(peaks)
+# 	#The extra list at the beginning is for outliers,and is initialized with all peaks
+# 	clusters = [peaks] + clustrifyMeans(means)
+# 	alignmentMatrix = align.generate_align_matrix(peaks,means)
+# 	(means,clusters) = clustering.cluster(peaks,means,alignmentMatrix)
+# 	print clusters
+# 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
+# 	print 'finished an outlier branching'
+# 	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
+# 	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
+# 	if p_val > probabilityThreshold:
+# 		return [cluster]
+# 	else:
+# 		binaryClusters = outlierBif(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
+# 		return binaryClusters
+
+
 	# if p_val > probabilityThreshold:
 	# 	means = paring.paredMeans(means,varAlignmentMatrix)
 	# 	numNewMeans = guessNewMeans(peaks, means, p_val)
@@ -196,25 +257,3 @@ def main (peaks):
 	# 	(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
 	# 	print 'finished clustering of subsequent k guess'
 	# 	n += 1
-	binaryClusters = main(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
-	return binaryClusters
-
-def outlierBif (peaks, prevClusterScore):
-	if len(cluster) == 1:
-		return []
-	peaks = cluster[1:]
-	means = pickTwo(peaks)
-	#The extra list at the beginning is for outliers,and is initialized with all peaks
-	clusters = [peaks] + clustrifyMeans(means)
-	alignmentMatrix = align.generate_align_matrix(peaks,means)
-	(means,clusters) = clustering.cluster(peaks,means,alignmentMatrix)
-	print clusters
-	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
-	print 'finished an outlier branching'
-	# (p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,[prevClusterVariance])
-	(p_val, clusterScores) = alignmentWelchTest(clusters,varAlignmentMatrix,[prevClusterScore])
-	if p_val > probabilityThreshold:
-		return [cluster]
-	else:
-		binaryClusters = outlierBif(clusters[0]) + bifurcate(clusters[1],clusterScores[0]) + bifurcate(clusters[2],clusterScores[1])
-		return binaryClusters

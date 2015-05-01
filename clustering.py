@@ -162,6 +162,6 @@ def cluster (peaks, means, alignmentMatrix):
 		means = recenter(clusters,prototypes,prototypeLengths)
 	#WIERD to be returning alignmentMatrix &  currAssignments b\c they're one step out of date
 	# print means[0]
-	print str(clusters) + '\n'
+	# print str(clusters) + '\n'
 	return (means,clusters)
 

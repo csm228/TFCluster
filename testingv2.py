@@ -56,6 +56,10 @@ def test_variance1():
 	(cluster,meanNum,varAlignmentMatrix) = varianceInput1
 	print main.variance(cluster,meanNum,varAlignmentMatrix)
 
+def test_pickTwo():
+	peaks = [peak1,peak2,peak3,peak4]
+	print main.pickTwo(peaks)
+
 print 'test_start \n'
 mean1 = test_seed_abstraction1()
 print '\n'
@@ -64,6 +68,8 @@ print '\n'
 test_align(peak1,peak1)
 test_align(peak2,peak2)
 test_align(peak3,peak3)
+print '\n'
+test_pickTwo()
 print '\n'
 test_variance1()
 # test_pickInitMeans()

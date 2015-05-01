@@ -61,9 +61,9 @@ def specificity(cluster):
 
 def writeOutput(filename, clusters):
 	outfile = open(filename, 'w')
-	outfile.write('Putative Outliers\n')
-	clusterWriter(clusters[0], outfile)
-	for i in range(1,len(clusters)):
+	# outfile.write('Putative Outliers\n')
+	# clusterWriter(clusters[0], outfile)
+	for i in range(len(clusters)):
 		outfile.write('Cluster ' + str(i) + '\n')
 		(specMotif, portion) = specificity(clusters[i][1:])
 		meanWriter(clusters[i][0], specMotif, portion, outfile)
