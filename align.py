@@ -21,6 +21,7 @@ def compare (character, probArray):
 	else:
 		print "Incorrect string in peaks, implement error handling"
 
+#assume both have the same length, generally = wordLength
 def scorePair (seqWord,meanWord):
 	#if misalignments become an issue, use weighted mean?
 	score = 0
@@ -66,10 +67,15 @@ def align (peak, meanWords):
 				dist = abs(i1-i2)
 				if (dist < segPairWordMaxDist) and (i1 - i2 + j2 == j1):
 					segScore = 0
-					for m in range(dist):
-						segScore += scoreMatrix[min(i1,i2)+m][min(j1,j2)+m]
-					# 	print segScore
-					# print '\n'
+					peakSeg = peak[0][i1:i2+wordLength]
+					meanSeg = []
+					#This could reaaaally use MEMOIZATION
+					for j in range(j1,j2):
+						meanSeg += [meanWords[j][0]]
+					meanSeg += meanWords[j2]
+					#So now, doesn't double-count characters in the center
+					segScore = scorePair(peakSeg,meanSeg)
+					# print segScore
 					segmentPairs += [(min(j1,j2)-min(i1,i2),segScore)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		# print segmentPairs[0]
@@ -106,5 +112,20 @@ def generate_align_matrix(peaks,means):
 		peakAlignments = []
 		for j in range(len(means)):
 			peakAlignments += [align(peak,meanWordsList[j])]
+		alignmentMatrix += [peakAlignments]
+	return alignmentMatrix
+
+#An alignment matrix for variance and mean paring calculations
+def generate_var_align_matrix(clusters):
+	alignmentMatrix = []
+	for j in range(1,len(clusters)):
+		cluster = clusters[j]
+		# print cluster[0]
+		mean = cluster[0]
+		meanWords = wordify(mean)
+		peakAlignments = []
+		for i in range(1,len(cluster)):
+			peak = cluster[i]
+			peakAlignments += [align(peak,meanWords)]
 		alignmentMatrix += [peakAlignments]
 	return alignmentMatrix

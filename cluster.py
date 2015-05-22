@@ -20,9 +20,9 @@ def initializePrototypes(means):
 		#The prototypical mean, generated during allocation
 		prototype = []
 		for n in range(len(means[m])):
-			#for now, to try and prevent null means, also try [0.0,0.0,0.0,0.0]
-			prototype += [[0.0,0.0,0.0,0.0]]
-			# prototype += [[1.0,1.0,1.0,1.0]]
+			#for now, to try and prevent null means, also try:
+			# prototype += [[0.0,0.0,0.0,0.0]]
+			prototype += [[0.25,0.25,0.25,0.25]]
 		prototypes += [prototype]
 	return prototypes
 
@@ -77,15 +77,6 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 			group(peaks[i], nearest+1, clusters, assignments)
 			account(peaks[i], prototypes[nearest], alignmentIndex)
 	return (clusters, prototypes)
-
-#Reliant on means of the same size....
-def difference (prevMean, currMean):
-	diff = 0
-	for i in range(len(currMean)):
-		#This should only go to four - len(currMean[i])
-		for j in range(4):
-			diff += abs(prevMean[i][j] - currMean[i][j])
-	return diff
 
 
 #DONE BEEN CANNABILIZED :P

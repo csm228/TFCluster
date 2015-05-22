@@ -21,20 +21,50 @@ def minScore (peak, meanWordsList):
 		minVal = min(minVal, align.score_of_align(peak,meanWords))
 	return minVal
 
-def kPlusPlus (means, peaks):
+#Finds the distance to the closest mean for each peak,
+#by comparing the distance to the newest mean with the value
+#for closest mean distance memoized from the previous run
+def newPeakDistances (mean,peaks,peakDistances):
+	meanWords = align.wordify(mean)
+	for i in range(len(peakDistances)):
+		score = align.score_of_align(peaks[i],meanWords)
+		peakDistances[i] = max(peakDistances[i],score)
+	return peakDistances
+
+#As an alternative, generate all possible sequences of a given length (7?), run k++ on the most common, then select representative sequences
+
+
+def kPlusPlus (means, peaks, peakDistances):
 	print "kPlusPlus"
-	meanWordsList = []
-	for mean in means:
-		meanWordsList += [align.wordify(mean)]
+	newestMean = means[len(means)-1]
+	peakDistances = newPeakDistances(newestMean,peaks,peakDistances)
 	seedIndex = 0
-	minVal = minScore(peaks[0], meanWordsList)
+	minVal = peakDistances[0]
 	for i in range(1,len(peaks)):
 		#Bias? should this be randomized instead?
-		tempScore = minScore(peaks[i], meanWordsList)
+		tempScore = peakDistances[i]
 		if tempScore < minVal:
 			minVal = tempScore
 			seedIndex = i
-	return (peaks.pop(seedIndex),peaks)
+	seed = peaks.pop(seedIndex)
+	# print seed
+	peakDistances.pop(seedIndex)
+	return (seed,peaks,peakDistances)
+
+# def kPlusPlus (means, peaks):
+# 	print "kPlusPlus"
+# 	meanWordsList = []
+# 	for mean in means:
+# 		meanWordsList += [align.wordify(mean)]
+# 	seedIndex = 0
+# 	minVal = minScore(peaks[0], meanWordsList)
+# 	for i in range(1,len(peaks)):
+# 		#Bias? should this be randomized instead?
+# 		tempScore = minScore(peaks[i], meanWordsList)
+# 		if tempScore < minVal:
+# 			minVal = tempScore
+# 			seedIndex = i
+# 	return (peaks.pop(seedIndex),peaks)
 
 # The matrix array of characters is a list of [probA;probT;probG;probC] lists
 def initProb (character):
@@ -49,32 +79,8 @@ def initProb (character):
 	else:
 		print "Incorrect string in peaks, implement error handling"
 
-# def initProb (character):
-# 	if character == 'A':
-# 		return [1,0,0,0]
-# 	elif character == 'T':
-# 		return [0,1,0,0]
-# 	elif character == 'G':
-# 		return [0,0,1,0]
-# 	elif character == 'C':
-# 		return [0,0,0,1]
-# 	else:
-# 		print "Incorrect string in peaks, implement error handling"
-
-#This rearrangement of seed generation may reduce mean locations with [0,0,0,0]
-#OR NOT :[
-# def initProb (character):
-# 	if character == 'A':
-# 		return [5,1,1,1]
-# 	elif character == 'T':
-# 		return [1,5,1,1]
-# 	elif character == 'G':
-# 		return [1,1,5,1]
-# 	elif character == 'C':
-# 		return [1,1,1,5]
-# 	print "Incorrect string in peaks, implement error handling"
-
 #abstracts a peak seed into a mean
+#CAREFUL, currently the only thing with action adding mean length
 def abstract (peak):
 	seq = peak[0]
 	matrix = []
@@ -100,12 +106,16 @@ def pickMeans (peaks, numMeans):
 			subSample += [thisPeak]
 		#Now we create the list of new means
 		seeds = []
-		(seed, subSample) = sample(subSample)
-		seeds += [abstract(seed)]
+		(peak, subSample) = sample(subSample)
+		seed = abstract(peak)
+		#Instantiate peakDistances so that the first alignment will always be better,
+		#and replace the original value as the closest peak, so that the peak farthest from any is chosen next
+		peakDistances = [0]*len(subSample)
+		seeds += [seed]
 		#PLEASE FIX numMeans guesses and index errors!!!!
 		if numMeans > 1:
 			for i in range(numMeans - 1):
-				(seed, subSample) = kPlusPlus(seeds,subSample)
+				(seed, subSample, peakDistances) = kPlusPlus(seeds,subSample,peakDistances)
 				seeds += [abstract(seed)]
 		return seeds
 
@@ -135,6 +145,8 @@ def pickNewMeans (clusters, numMeans, clusterVariances):
 	if numMeans > numOutliers:
 		means += pickMeans(outliers, numOutliers)
 		numMeans -= numOutliers
+		#finds the highest variance cluster and it's index
+		#!!!!!!!!!!!!!!!! Reevaluate the usefulness of this as opposed to a holistic sampling
 		prevClusterVariances = list(enumerate(list(clusterVariances)))
 		prevClusterVariances.sort(key = lambda seg: seg[1])
 		while numMeans > 0:
