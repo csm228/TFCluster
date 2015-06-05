@@ -11,7 +11,8 @@ highScoreThreshold = 3
 segPairWordMaxDist = 13
 
 #How far around the high score segment should be included?
-paringBufferLength = 3
+paringBufferLength = 1
+blankProb = [0.25,0.25,0.25,0.25]
 
 #How large of a standard deviation in mean alignment length should cause paring?
 paringDevAllowance = 1.0
@@ -39,10 +40,19 @@ def processSegments(segments, mean):
 	print segments
 	newMeans = []
 	for (score,i,j) in segments:
-		i1 = max(0, i - paringBufferLength)
-		i2 = min(len(mean),j+wordLength+paringBufferLength)
-		#Modified line - reboxing for output with alignment length
-		newMeans += [(mean[i1:i2],-1)]
+		overflowL = paringBufferLength - i
+		overflowR = j + paringBufferLength - len(mean)
+		newMean = []
+		if overflowL > 0:
+			if overflowR > 0:
+				newMean = ([blankProb] * overflowL) + mean + ([blankProb] * overflowR)
+			else:
+				newMean = ([blankProb] * overflowL) + mean[:j]
+		elif overflowR > 0:
+			newMean = mean[i:] + ([blankProb] * overflowR)
+		else:
+			newMean = mean[i:j]
+		newMeans += [(newMean,-1)]
 	# print str(newMeans) + '\n'
 	return newMeans
 
@@ -58,16 +68,16 @@ def originalPare((mean,targetLength)):
 	segments = []
 	i = 0
 	while i < numMeanWords:
-		if scores[i] > highScoreThreshold:
-			currSegScore = 0
-			j = 0
+		currSegScore = scores[i]
+		if currSegScore > highScoreThreshold:
+			j = 1  # want to start at the next word
 			#FIX THIS - what if there is a non-high score word in the middle of a motif? (actually, that's pretty unlikely)
 			while j < segPairWordMaxDist and i+j < numMeanWords and scores[i+j] > highScoreThreshold:
-				currSegScore += scores[i+j]
+				currSegScore += max(mean[i+j])
 				j += 1
 			#So stores it as score, beginning word, ending word
 			#Score currently isn't used, but may be
-			segments += [(currSegScore,i,i+j)]
+			segments += [(currSegScore,i,i+j+wordLength)]
 			i += j
 		i += 1
 	#Segments need to turn into means that account for buffer distances and the length of meanWords
@@ -95,6 +105,9 @@ def lengthVar(lengths):
 		sumVar += (avgLength - float(length))**2
 	lengthVariance = sumVar / float(numLengths)
 	return lengthVariance
+
+
+#BELOW: SERIOUS BUGCHECK MAY BE NECESSARY, as with originaPare()
 
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
 #Now uses mean alignment length to guess length and position of new means

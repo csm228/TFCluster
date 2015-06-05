@@ -1,6 +1,7 @@
 import align
 import cluster
 import seed
+import matrixSeed
 import paring
 
 import math
@@ -89,7 +90,14 @@ def clustrifyMeans (means):
 # print a line when the variance goes back up between means
 # Requires a list of peaks where the sequence is the first element of the peak
 def main (peaks):
-	means = seed.pickInitMeans(peaks,guessInitMeans(peaks))
+	# means = seed.pickInitMeans(peaks,guessInitMeans(peaks))
+	#
+	# numMeans = guessInitMeans(peaks)
+	# numMatrixSeeds = int(0.75 * numMeans) + 1
+	# means = matrixSeed.pickInitSeeds(peaks,numMatrixSeeds)
+	# means += seed.pickInitMeans(peaks,numMeans-numMatrixSeeds)
+	#
+	means = matrixSeed.pickInitSeeds(peaks,guessInitMeans(peaks))
 	print peaks[0]
 	#The extra list at the beginning is for outliers,and is initialized with all peaks
 	clusters = [peaks] + clustrifyMeans(means)
@@ -97,6 +105,7 @@ def main (peaks):
 	clusterVariances = [0]*5 #just something so that the first Welch's test doesn't cause termination
 	print 'first runthrough of clustering'
 	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
+	# return clusters
 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'starting welch\'s t-test clustering with centroid means'
 	(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
