@@ -25,7 +25,7 @@ def guessInitMeans(peaks):
 #Guesses how many more means will be needed
 #Just iterates by 5. Ouch.
 def guessNewMeans(peaks, means, p_val):
-	return 5
+	return 6
 
 #Now using varAlignmentMatrix
 def variance (cluster,meanNum,varAlignmentMatrix):
@@ -105,7 +105,6 @@ def main (peaks):
 	clusterVariances = [0]*5 #just something so that the first Welch's test doesn't cause termination
 	print 'first runthrough of clustering'
 	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
-	# return clusters
 	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
 	print 'starting welch\'s t-test clustering with centroid means'
 	(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
@@ -114,7 +113,9 @@ def main (peaks):
 		numNewMeans = guessNewMeans(peaks, means, p_val)
 		#currently, no correlation between how many means duplicated/dropped in paring
 		#and how many and from where they are added in mean picking
-		means += seed.pickNewMeans(clusters, numNewMeans, clusterVariances)
+		# means += seed.pickMeans(peaks, numNewMeans)
+		means += seed.pickNewMeansOutliersToRandom(clusters, numNewMeans)
+		# means += seed.pickNewMeans(clusters, numNewMeans, clusterVariances)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
 		(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
 		varAlignmentMatrix = align.generate_var_align_matrix(clusters)

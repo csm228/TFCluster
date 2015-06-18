@@ -8,10 +8,10 @@ wordLength = 5
 highScoreThreshold = 3
 
 #Distance that two words must be under to group into a segment pair
-segPairWordMaxDist = 13
+segPairWordMaxDist = 14
 
 #How far around the high score segment should be included?
-paringBufferLength = 1
+paringBufferLength = 2
 blankProb = [0.25,0.25,0.25,0.25]
 
 #How large of a standard deviation in mean alignment length should cause paring?
@@ -24,7 +24,7 @@ paringLengthSimilarity = 1
 #Used lots, copied here for access to wordLength
 def wordify (seq):
 	seqWords = []
-	for i in range((len(seq)-wordLength)):
+	for i in range((len(seq)-wordLength+1)):
 		seqWords += [seq[i:(i+wordLength)]]
 	return seqWords
 
@@ -52,13 +52,13 @@ def processSegments(segments, mean):
 			newMean = mean[i:] + ([blankProb] * overflowR)
 		else:
 			newMean = mean[i:j]
-		newMeans += [(newMean,-1)]
+		newMeans += [(newMean,-1,-1)]
 	# print str(newMeans) + '\n'
 	return newMeans
 
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
 #Modified for use with (sequence, score) means - unboxing and return type
-def originalPare((mean,targetLength)):
+def originalPare((mean,targetLength,targetIndex)):
 	meanWords = wordify(mean)
 	numMeanWords = len(meanWords)
 	scores = []
@@ -112,7 +112,7 @@ def lengthVar(lengths):
 #Somewhat similar to alignment, generates high scoring fragments of centroids and branches them off as means
 #Now uses mean alignment length to guess length and position of new means
 #For a combined length and conserved alignment, 
-def pare((mean, targetLength), lengthAlignments):
+def pare((mean, targetLength, targetIndex), lengthAlignments):
 	#Odd artifact here, the targetLength is from alignments on the previous clustering,
 	# so they don't match the new score. Take out the extra alignmentMatrix generation?
 	#FIXED with summing new memoized alignments, but may want to check this
@@ -161,6 +161,94 @@ def pare((mean, targetLength), lengthAlignments):
 		stdDev = math.sqrt(lengthVar(lengths))
 	return newMeans
 
+
+
+#Takes a sequence (or mean) and a length parameter
+# and returns the list of words of the length parameter
+#Used lots, copied here for access to wordLength
+def parWordify (seq,length):
+	seqWords = []
+	#the len(seq)-length+1 is necessary to count every word:
+	# for len(seq) = 4, length = 3, len(seq)-length would give only i=0, or one word when to are needed
+	for i in range(len(seq)-length+1):
+		seqWords += [seq[i:(i+length)]]
+	return seqWords
+
+def scoreMeanWord(meanWord):
+	score = 0
+	for probArray in meanWord:
+		score += max(probArray)
+	return score
+
+#Somewhat similar to alignment, generates the highest scoring fragment of the targetLength + buffer
+# and generates a new mean from that segment
+#IMPORTANT: ASSUMES THAT THE LENGTHALIGNMENTS AND TARGETLENGTH <= len(mean)
+def segPare((mean, targetLength, targetIndex), lengthAlignments):
+	#Odd artifact here, the targetLength is from alignments on the previous clustering,
+	# so they don't match the new score. Use lengthAlignments?
+	numPeaks = len(lengthAlignments)
+	if numPeaks <= 0:
+		print []
+		return []
+	lengths = []
+	for (i,m,score,length) in lengthAlignments:
+		lengths += [length]
+	newMeans = []
+	# stdDev = math.sqrt(lengthVar(lengths))
+	# #Currently this DOESN'T check or utilize TARGETLENGTH
+	# if stdDev <= paringLengthSimilarity:
+	# 	modeLength = max(set(lengths), key=lengths.count)
+	# 	l = 0
+	# 	while 0 <= l < numPeaks:
+	# 		(i,m,score,length) = lengthAlignments[l]
+	# 		if length == modeLength:
+	# 			newMeans += [(processAlignment(lengthAlignments[l],mean),-1)]
+	# 			l = -1
+	# 		else:
+	# 			l += 1
+	# 	return newMeans
+	# while stdDev >= paringDevAllowance:
+	# 	#finds the most common length, the mode
+	# 	modeLength = max(set(lengths), key=lengths.count)
+	# 	#Temp value, selectedAlignment should always be changed, as something has the mode length
+	# 	selectedAlignment = (0,0,0,0)
+	# 	k = 0
+	# 	while k < len(lengthAlignments):
+	# 		#length = lengths[i]
+	# 		(i,m,score,length) = lengthAlignments[k]
+	# 		if length == modeLength:
+	# 			#removes the values for a second iteration
+	# 			selectedAlignment = lengthAlignments.pop(k)
+	# 			lengths.pop(k)
+	# 		elif length - paringLengthSimilarity <= length <= length + paringLengthSimilarity:
+	# 			#removes close lengths too
+	# 			lengthAlignments.pop(k)
+	# 			lengths.pop(k)
+	# 		else:
+	# 			k += 1
+	# 	newMeans += [(processAlignment(selectedAlignment,mean),-1,-1)]
+	# 	if len(lengthAlignments) <= 0:
+	# 		return newMeans
+	# 	stdDev = math.sqrt(lengthVar(lengths))
+	targetLength = sum(lengths)/float(numPeaks)
+	newLength = int(targetLength + 2*paringBufferLength)
+	#now deal with newLength > len(mean),
+	#assumes that it will never be > len(mean) + 2*paringBufferLength
+	if newLength > len(mean):
+		mean = ([blankProb] * paringBufferLength) + mean + ([blankProb] * paringBufferLength)
+		# print mean
+	meanWords = parWordify(mean,newLength)
+	# print newLength
+	# print meanWords
+	segments = []
+	for word in meanWords:
+		segments += [(scoreMeanWord(word),word)]
+	segments.sort(key = lambda seg: seg[0], reverse=True)
+	(score, meanWord) = segments[0]
+	print (score, targetLength)
+	newMeans += [(meanWord,targetLength,paringBufferLength)]
+	return newMeans
+
 # #Currently the algorithm pares every mean every iteration, maybe too much?
 # def paredMeans(means,varAlignmentMatrix):
 # 	newMeans = []
@@ -169,7 +257,15 @@ def pare((mean, targetLength), lengthAlignments):
 # 		newMeans += pare(means[j],list(varAlignmentMatrix[j]))
 # 	return newMeans
 
-#Uses originalPare, but unboxes 
+# #Currently the algorithm pares every mean every iteration, maybe too much?
+# def paredMeans(means,varAlignmentMatrix):
+# 	newMeans = []
+# 	for j in range(len(means)):
+# 		#make sure the pare function doesn't change the alignment matrix
+# 		newMeans += segPare(means[j],list(varAlignmentMatrix[j]))
+# 	return newMeans
+
+# Uses originalPare, but unboxes 
 def paredMeans(means,alignmentMatrix):
 	newMeans = []
 	for mean in means:

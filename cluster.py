@@ -19,7 +19,7 @@ def initializePrototypes(means):
 	for m in range(len(means)):
 		#The prototypical mean, generated during allocation
 		prototype = []
-		(mean,targetLength) = means[m]
+		(mean,targetLength,targetIndex) = means[m]
 		for n in range(len(mean)):
 			#for now, to try and prevent null means.
 			# prototype += [[0.0,0.0,0.0,0.0]]
@@ -55,9 +55,12 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 	#Outliers are stored in the first cluster (list) in clusters
 	clusters = [[]]
 	prototypeLengths = []
+	prototypeIndexes = []
 	for mean in means:
 		clusters += [[mean]]
-		prototypeLengths += [0]
+		prototypeLengths += [[]]
+		prototypeIndexes += [[]]
+	# print prototypeLengths
 	prototypes = initializePrototypes(means)
 	for i in range(len(peaks)):
 		#the closest mean, instantiated as the first cluster, 0 alignment score
@@ -65,24 +68,28 @@ def allocate (peaks, means, alignmentMatrix, assignments):
 		#if it doesn't they never get used
 		nearest = 0
 		maxScore = 0
-		alignmentIndex = 0
+		displacement = 0
+		displacement = 0
 		alignmentLength = 0
+		alignmentIndex = 0
 		for j in range(len(means)):
 			(index,motifIndex,score,length) = alignmentMatrix[i][j]
 			#How to resolve ties?
 			if score > maxScore:
 				maxScore = score
 				nearest = j
-				alignmentIndex = index
+				displacement = index
 				alignmentLength = length
+				alignmentIndex = motifIndex
 		if maxScore <= outlierThreshold:
 			group(peaks[i], 0, clusters, assignments)
 		else:
 			#grouping needs nearest+1 because 0 is the outliers
 			group(peaks[i], nearest+1, clusters, assignments)
-			account(peaks[i], prototypes[nearest], alignmentIndex)
-			prototypeLengths[nearest] += alignmentLength
-	return (clusters, prototypes, prototypeLengths)
+			account(peaks[i], prototypes[nearest], displacement)
+			prototypeLengths[nearest] += [alignmentLength]
+			prototypeIndexes[nearest] += [alignmentIndex]
+	return (clusters, prototypes, prototypeLengths, prototypeIndexes)
 
 #The hell is this and when was it written?  :P
 #Reliant on means of the same size....
@@ -98,7 +105,7 @@ def difference (prevMean, currMean):
 #if recentered mean moves from seed (previous mean), throw out and pick only from outliers
 #recenter on the fly: store number in cluster and just add then average??
 #The calculation step of the "centroids" of the clusters
-def recenter (clusters, prototypes, prototypeLengths):
+def recenter (clusters, prototypes, prototypeLengths, prototypeIndexes):
 	means = []
 	for j in range(1,len(clusters)):
 		# print clusters[j][0]
@@ -113,7 +120,7 @@ def recenter (clusters, prototypes, prototypeLengths):
 			# if total != 0: #unnecessary if using prototypes instantiated w/ [1,1,1,1]
 				#All locations should have 4 elements, change to len(loc)?
 			for p in range(4):
-				loc[p] = (loc[p] / total)**2 #try exponentiating the conservation for better alignments
+				loc[p] = (loc[p] / total)**3 #try exponentiating the conservation for better alignments (used to be **2 :P)
 			total = 0
 			for prob in loc:
 				total += prob
@@ -122,14 +129,26 @@ def recenter (clusters, prototypes, prototypeLengths):
 		#now get the mean alignment length
 		numPeaks = len(clusters[j])-1
 		prototypeLength = prototypeLengths[j-1]
+		prototypeIndex = prototypeIndexes[j-1]
+		#change this to an array of lengths to pick the mode or other, not just the mean?
+		targetLength = -1
+		targetIndex = -1
 		if numPeaks > 0:
-			prototypeLength /= float(numPeaks)
+			targetLength = sum(prototypeLength)/float(len(prototypeLength))
+			targetIndex = sum(prototypeIndex)/float(len(prototypeIndex))
+			#
+			#Here try retrieving the mode pair of alignment length and position
+			#THIS IS MUCH WORSE THAN A CONTINUOUS FUNCTION, PRONE TO ERROR
+			# pairsLI = zip(prototypeLength, prototypeIndex)
+			# (targetLength,targetIndex) = max(set(pairsLI), key=pairsLI.count)
 		#Here may be where highly variant means should be thrown out, (before adding new means)
 		#but need to allow for the first run with a mean - 
 		# the seed will always have high change in variance on the first run
 		#ALSO, easier not to change cluster structure before recentering
-		clusters[j][0] = (prototype,prototypeLength)
-		means += [(prototype,prototypeLength)]
+		#
+		#Important to change cluster mean too? Prob not.
+		clusters[j][0] = (prototype,targetLength,targetIndex)
+		means += [(prototype,targetLength,targetIndex)]
 	return means
 
 #perhaps REPLACE THIS with a boolean during alignment
@@ -149,18 +168,18 @@ def cluster (peaks, means, alignmentMatrix):
 	prevAssignments = list(currAssignments)
 	n = 1
 	print 'cluster run 1'
-	(clusters,prototypes,prototypeLengths) = allocate(peaks,means,alignmentMatrix,currAssignments)
+	(clusters,prototypes,prototypeLengths,prototypeIndexes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 	# print clusters[1][0]
-	means = recenter(clusters,prototypes,prototypeLengths)
+	means = recenter(clusters,prototypes,prototypeLengths,prototypeIndexes)
 	# print means[0]
 	while not termination(prevAssignments,currAssignments):
 		prevAssignments = list(currAssignments)
 		alignmentMatrix = align.generate_align_matrix(peaks,means)
 		n+=1
 		print 'cluster run ' + str(n)
-		(clusters,prototypes,prototypeLengths) = allocate(peaks,means,alignmentMatrix,currAssignments)
+		(clusters,prototypes,prototypeLengths,prototypeIndexes) = allocate(peaks,means,alignmentMatrix,currAssignments)
 		# print clusters[1][0]
-		means = recenter(clusters,prototypes,prototypeLengths)
+		means = recenter(clusters,prototypes,prototypeLengths,prototypeIndexes)
 	#WIERD to be returning alignmentMatrix &  currAssignments b\c they're one step out of date
 	# print means[0]
 	return (means,clusters)

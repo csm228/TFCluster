@@ -33,17 +33,17 @@ def scorePair (seqWord,meanWord):
 #Used in the alignment function
 def wordify (seq):
 	seqWords = []
-	for i in range((len(seq)-wordLength)):
+	for i in range((len(seq)-wordLength+1)):
 		seqWords += [seq[i:(i+wordLength)]]
 	return seqWords
 
 
 #Generates an index of alignment, alignment score, and length of the alignment
-# in the form (index, score, length)
+# in the form (displacement of , alignment index on the mean, score, alignment length)
 # where the index is the displacement of the peak sequence from the mean
 # weights by length of the alignment relative to the mean length of alignment
 # "Length-Sensitive" alignment separately? so non-sensitive first, then after first recen
-def align (peak, meanWords, targetLength):
+def align (peak, meanWords, targetLength, targetIndex):
 	seqWords = wordify(peak[0])
 	scoreMatrix = []
 	highScoreWords = []
@@ -85,9 +85,19 @@ def align (peak, meanWords, targetLength):
 					# print segScore
 					if targetLength > 0:
 						#accounting for length
-						multiplier = (targetLength - (targetLength-(float(dist+wordLength)))**2)/targetLength
-						segScore *= multiplier
-					segmentPairs += [(min(j1,j2)-min(i1,i2),min(j1,j2),segScore,dist+wordLength)]
+						# lengthMultiplier = (targetLength - (targetLength-(float(dist+wordLength)))**2)/targetLength
+						# lengthMultiplier = 1 / (1 + (targetLength-(float(dist+wordLength)))**2)
+						lengthMultiplier = 1 / (1 + abs(targetLength - float(dist+wordLength))/2.0) #less heavy weighting
+							#CONCERN: different motifs may have different variance in alignment length and index
+						segScore *= lengthMultiplier
+					# (below) the index of the alignment on the mean
+					indexOnMean = min(j1,j2)
+					if targetIndex >= 0:
+						#accounting for alignment index
+						# indexMultiplier = 1 / (1 + (targetIndex-(float(indexOnMean)))**2)
+						indexMultiplier = 1 / (1 + abs(targetIndex - float(indexOnMean))/2.0) #less heavy weighting
+						segScore *= indexMultiplier
+					segmentPairs += [(min(j1,j2)-min(i1,i2),indexOnMean,segScore,dist+wordLength)]
 		#FIX THIS - sort function? implement search trees for ^ ?
 		if len(segmentPairs) > 0:
 			# print segmentPairs
@@ -98,8 +108,15 @@ def align (peak, meanWords, targetLength):
 		(score,i,j) = highScoreWords[0]
 		if targetLength > 0:
 			#accounting for length
-			multiplier = (targetLength - (targetLength-(float(wordLength)))**2)/targetLength
-			score *= multiplier
+			# lengthMultiplier = (targetLength - (targetLength-(float(wordLength)))**2)/targetLength
+			# lengthMultiplier = 1 / (1 + (targetLength-(float(wordLength)))**2)
+			lengthMultiplier = 1 / (1 + abs(targetLength - float(wordLength))/2.0)
+			score *= lengthMultiplier
+		if targetIndex >= 0:
+			#accounting for alignment index
+			# indexMultiplier = 1 / (1 + (targetIndex-(float(j)))**2)
+			indexMultiplier = 1 / (1 + abs(targetIndex - float(j))/2.0)
+			score *= indexMultiplier
 		return (j-i,j,score,wordLength)
 	return (0,0,0,0)
 
@@ -109,27 +126,27 @@ def align (peak, meanWords, targetLength):
 
 #kinda sad functions, index is only used in recentering,
 # and only the score is used everywhere else: so separate them entirely?
-def index_of_align(peak, meanWords, targetLength):
-	(i,m,score,length) = align(peak,meanWords,targetLength)
+def index_of_align(peak, meanWords, targetLength, targetIndex):
+	(i,m,score,length) = align(peak,meanWords,targetLength,targetIndex)
 	return i
 
-def score_of_align(peak, meanWords, targetLength):
-	(i,m,score,length) = align(peak,meanWords,targetLength)
+def score_of_align(peak, meanWords, targetLength, targetIndex):
+	(i,m,score,length) = align(peak,meanWords,targetLength,targetIndex)
 	return score
 
 
-#Generates an alignment matrix using length seneitive alignments
+#Generates an alignment matrix using length sensitive alignments
 def generate_align_matrix(peaks,means):
 	meanWordsList = []
-	for (mean,targetLength) in means:
-		meanWordsList += [(wordify(mean),targetLength)]
+	for (mean,targetLength,targetIndex) in means:
+		meanWordsList += [(wordify(mean),targetLength,targetIndex)]
 	alignmentMatrix = []
 	for i in range(len(peaks)):
 		peak = peaks[i]
 		peakAlignments = []
 		for j in range(len(means)):
-			(meanWords,targetLength) = meanWordsList[j]
-			peakAlignments += [align(peak,meanWords,targetLength)]
+			(meanWords,targetLength,targetIndex) = meanWordsList[j]
+			peakAlignments += [align(peak,meanWords,targetLength,targetIndex)]
 		alignmentMatrix += [peakAlignments]
 	return alignmentMatrix
 
@@ -139,12 +156,12 @@ def generate_var_align_matrix(clusters):
 	for j in range(len(clusters)-1):
 		cluster = clusters[j+1]
 		# print cluster[0]
-		(mean,targetLength) = cluster[0]
+		(mean,targetLength,targetIndex) = cluster[0]
 		meanWords = wordify(mean)
 		peakAlignments = []
 		for i in range(len(cluster)-1):
 			peak = cluster[i+1]
-			peakAlignments += [align(peak,meanWords,targetLength)]
+			peakAlignments += [align(peak,meanWords,targetLength,targetIndex)]
 		alignmentMatrix += [peakAlignments]
 	return alignmentMatrix
 

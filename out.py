@@ -10,9 +10,9 @@ def consensusString(mean):
 		consensus += consensusCharacter(probArray)
 	return consensus
 
-# write individual peaks (or currently means)
-def meanWriter((mean,targetLength), specMotif, portion, outfile):
-	line = consensusString(mean) + '\t' 'of mean alignment length ' + str(targetLength) + ' with ' + specMotif + ' composing ' + str(portion) + '%\n'
+# write individual means
+def meanWriter((mean,targetLength,targetIndex), specMotif, portion, outfile):
+	line = consensusString(mean) + '\t' 'of mean alignment length ' + str(targetLength) + ' and mean alignment index ' + str(targetIndex) + ' with ' + specMotif + ' composing ' + str(portion) + '%\n'
 	outfile.write(line)
 	line = str(mean) + '\n'
 	outfile.write(line)

@@ -52,13 +52,32 @@ def test_pickInitMeans():
 	peaks = [peak1,peak2,peak3,peak4,peak5,peak6]
 	print seed.pickInitMeans(peaks,3)
 
+def test_pickMeans1():
+	peaks = [peak1,peak2,peak3,peak4,peak5,peak6]
+	print seed.pickInitMeans(peaks,5)
+
+def test_pickMeans2():
+	peaks = [peak1,peak2,peak3,peak4,peak5,peak6]
+	print seed.pickInitMeans(peaks,6)
+
 def test_pickInitSeeds():
 	peaks = [peak1,peak2,peak3,peak4,peak5,peak6]
 	print matrixSeed.pickInitSeeds(peaks,3)
 
+def test_segPare1():
+	newMeans = paring.segPare(mean1, [(1,2,34,8),(1,2,3,9),(1,2,3,10)])
+	print newMeans
+
+def test_segPareExact():
+	newMeans = paring.segPare(mean1, [(1,2,34,33),(1,2,3,33),(1,2,3,33)])
+	print newMeans
+
+def test_segPareOverrun():
+	newMeans = paring.segPare(mean1, [(1,2,34,40),(1,2,3,40),(1,2,3,40)])
+	print newMeans
 
 print 'test_start \n'
-# mean1 = test_seed_abstraction1()
+mean1 = test_seed_abstraction1()
 print '\n'
 # meanWords1 = test_wordification1()
 print '\n'
@@ -67,8 +86,14 @@ print '\n'
 # test_align(peak3,peak3)
 print '\n'
 # test_pickInitMeans()
+# test_pickMeans1()
+# test_pickMeans2()
 print '\n'
-test_pickInitSeeds()
+test_segPare1()
+test_segPareExact()
+test_segPareOverrun()
+print '\n'
+# test_pickInitSeeds()
 print '\n'
 # input_loc = str(sys.argv[1])
 # output_loc = str(sys.argv[2])

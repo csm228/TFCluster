@@ -1,7 +1,7 @@
-import align
+# import align
 
 import variableSet
-import random
+# import random
 
 #how long the sequences in the matrix will be
 #May want to set an input function to recalculate parameters in the event that the length changes?
@@ -39,13 +39,14 @@ def abstractSeed (seedSeq):
 	for character in seedSeq:
 		matrix += [initProb(character)]
 	matrix += [blankProb] * bufferLength
-	return (matrix, -1)
+	#if the words are high frequency, we can already assume they are means
+	return (matrix, wordLength, 0)
 
 #Takes a sequence (or mean) and returns the list of words of length wordLength
 #Used in the alignment function
 def wordify (seq):
 	seqWords = []
-	for i in range((len(seq)-wordLength)):
+	for i in range((len(seq)-wordLength+1)):
 		seqWords += [seq[i:(i+wordLength)]]
 	return seqWords
 

@@ -2,11 +2,14 @@ import align
 
 import random
 
+#assumes numMeans <= numPeaks
 def calcSubSize (numMeans, numPeaks):
 	#deal with the case where the subsample or the number of peaks left
 	#is less than the number of new guessed clusters [+5 below]
-	subSize = numPeaks//10 + 5
-	return min(subSize,numPeaks) #This feels horrible - deal with a lack of outliers ELSEWHERE
+	subSize = min(max(numPeaks//10 + 5, numPeaks + 5), numMeans)
+	#^This feels horrible - deal with a lack of outliers ELSEWHERE
+	#OR make a better estimate/controlled k
+	return subSize
 
 #Takes a random peak and removes it from the list of peaks,
 #returns (peak, remaining peaks) as a tuple
@@ -17,8 +20,8 @@ def sample (peaks):
 # "Deprecated" - not used anymore due to memoization in kPlusPlus
 # returns the minimum score 
 def minScore (peak, meanWordsList):
-	#align gives a tuple of index, score, so take the score
-	minVal = align.score_of_align(peak, meanWordsList[0],-1)
+	#align gives a tuple of displacement, index, length, score, so take the score
+	minVal = align.score_of_align(peak, meanWordsList[0],-1,-1)
 	for meanWords in meanWordsList[1:]:
 		minVal = min(minVal, align.score_of_align(peak,meanWords))
 	return minVal
@@ -30,7 +33,7 @@ def newPeakDistances (mean,peaks,peakDistances):
 	meanWords = align.wordify(mean)
 	for i in range(len(peakDistances)):
 		#score_of_align needs targetLength now, -1 for inconsequential
-		score = align.score_of_align(peaks[i],meanWords,-1)
+		score = align.score_of_align(peaks[i],meanWords,-1,-1)
 		peakDistances[i] = max(peakDistances[i],score)
 	return peakDistances
 
@@ -114,13 +117,13 @@ def abstract (peak):
 	matrix = []
 	for character in seq:
 		matrix += [initProb(character)]
-	return (matrix, -1)
+	return (matrix, -1, -1)
 
 # picks a subsample from peaks, 
 # then picks seed means from that by k++ w/o replacement
 # ALSO, stop with no peaks in outliers - ?
 def pickMeans (peaks, numMeans):
-	#Now it deals with all len 0 clusters here
+	#It deals with all len 0 clusters here
 	if len(peaks) == 0:
 		return []
 	else:
@@ -128,6 +131,7 @@ def pickMeans (peaks, numMeans):
 		nonReplacement = list(peaks)
 		subSample = []
 		subSampleSize = calcSubSize(numMeans, len(peaks))
+		# print str(subSampleSize) + " intended size subSample"
 		for x in xrange(subSampleSize):
 			(thisPeak,rest) = sample(nonReplacement)
 			nonReplacement = rest
@@ -136,15 +140,19 @@ def pickMeans (peaks, numMeans):
 		seeds = []
 		(peak, subSample) = sample(subSample)
 		seed = abstract(peak)
+		# print str(len(subSample)) + " size subSample"
 		#Instantiate peakDistances so that the first alignment will always be better,
 		#and replace the original value as the closest peak, so that the peak farthest from any is chosen next
 		peakDistances = [0]*len(subSample)
 		seeds += [seed]
+		# print str(len(seeds)) + " # of seeds \n"
 		#PLEASE FIX numMeans guesses and index errors!!!!
 		if numMeans > 1:
 			for i in range(numMeans - 1):
 				(seed, subSample, peakDistances) = kPlusPlus(seeds,subSample,peakDistances)
 				seeds += [abstract(seed)]
+				# print str(len(subSample)) + " size subSample"
+				# print str(len(seeds)) + " # of seeds \n"
 		return seeds
 
 #Assumes that the initial mean guess won't be larger that the number of peaks
@@ -170,6 +178,8 @@ def pickNewMeans (clusters, numMeans, clusterVariances):
 	outliers = clusters[0]
 	numOutliers = len(outliers)
 	#Perhaps divide the new seeds between outliers and old peaks based on size of outliers and variances?
+	print str(numMeans) + " seeds to pick this cycle"
+	print str(numOutliers) + " outliers this cycle\n"
 	if numMeans > numOutliers:
 		means += pickMeans(outliers, numOutliers)
 		numMeans -= numOutliers
@@ -177,9 +187,12 @@ def pickNewMeans (clusters, numMeans, clusterVariances):
 		prevClusterVariances = list(enumerate(list(clusterVariances)))
 		prevClusterVariances.sort(key = lambda seg: seg[1])
 		while numMeans > 0:
+			print str(numMeans) + " seeds left to pick"
 			(j,maxVar) = prevClusterVariances.pop()
-			cluster = clusters[j][1:]
+			#want j+1 so that it doesn't pick from outliers (?)
+			cluster = clusters[j+1][1:]
 			numPeaks = len(cluster)
+			print str(numPeaks) + " in this selected cluster\n"
 			#variace of an empty mean is currently 0, but that could change,
 			#so account for pulling from clusters without any means? - currently pickMeans returns [] in this case
 			if numMeans > numPeaks:
@@ -187,9 +200,27 @@ def pickNewMeans (clusters, numMeans, clusterVariances):
 				means += pickMeans(cluster, numPeaks)
 				numMeans -= numPeaks
 			else:
-				means += pickMeans(clusters[j][1:], numMeans)
+				means += pickMeans(cluster, numMeans)
 				numMeans -= numMeans
 	else:
 		means += pickMeans(outliers, numMeans)
 	return means
 
+#Still assumes mean guess <= number of total peaks
+def pickNewMeansOutliersToRandom (clusters, numMeans):
+	means = []
+	outliers = clusters[0]
+	numOutliers = len(outliers)
+	#Perhaps divide the new seeds between outliers and old peaks based on size of outliers and variances?
+	print str(numMeans) + " seeds to pick this cycle, not by cluster variance"
+	print str(numOutliers) + " outliers this cycle"
+	if numMeans < numOutliers:
+		means += pickMeans(outliers, numOutliers)
+	else:
+		means += pickMeans(outliers, numOutliers)
+		numMeans -= numOutliers
+		peaks = []
+		for cluster in clusters[1:]:
+			peaks += cluster[1:]
+		means += pickMeans(outliers, numMeans)
+	return means
