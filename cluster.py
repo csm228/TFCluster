@@ -119,11 +119,11 @@ def recenter (clusters, prototypes, prototypeLengths, prototypeIndexes):
 			#Also, is it better to have the sum of the values at a location >1?
 			# if total != 0: #unnecessary if using prototypes instantiated w/ [1,1,1,1]
 				#All locations should have 4 elements, change to len(loc)?
-			for p in range(4):
-				loc[p] = (loc[p] / total)**3 #try exponentiating the conservation for better alignments (used to be **2 :P)
-			total = 0
-			for prob in loc:
-				total += prob
+			# for p in range(4):
+			# 	loc[p] = (loc[p] / total)**3 #try exponentiating the conservation for better alignments (used to be **2 :P)
+			# total = 0
+			# for prob in loc:
+			# 	total += prob
 			for p in range(4):
 				loc[p] = loc[p] / total
 		#now get the mean alignment length
@@ -159,7 +159,7 @@ def termination(prevAssignments,currAssignments):
 	for j in range(numPeaks):
 		if prevAssignments[j] != currAssignments[j]:
 			numReallocated += 1
-	return (numReallocated < (numPeaks // 10) + 1)
+	return (numReallocated < (numPeaks // 25) + 1) #The fraction of peaks not changing clusters between steps
 
 #The k-means clustering algorithm, managing the termination of clustering under a guessed number of means
 def cluster (peaks, means, alignmentMatrix):

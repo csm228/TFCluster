@@ -5,10 +5,10 @@ import math
 wordLength = 5
 
 #Lower bound for inclusion in high scoring words, lower than alignment to allow for variance?
-highScoreThreshold = 3
+highScoreThreshold = 2.0
 
 #Distance that two words must be under to group into a segment pair
-segPairWordMaxDist = 14
+segPairWordMaxDist = 10
 
 #How far around the high score segment should be included?
 paringBufferLength = 2
@@ -257,17 +257,17 @@ def segPare((mean, targetLength, targetIndex), lengthAlignments):
 # 		newMeans += pare(means[j],list(varAlignmentMatrix[j]))
 # 	return newMeans
 
-# #Currently the algorithm pares every mean every iteration, maybe too much?
-# def paredMeans(means,varAlignmentMatrix):
-# 	newMeans = []
-# 	for j in range(len(means)):
-# 		#make sure the pare function doesn't change the alignment matrix
-# 		newMeans += segPare(means[j],list(varAlignmentMatrix[j]))
-# 	return newMeans
-
-# Uses originalPare, but unboxes 
-def paredMeans(means,alignmentMatrix):
+#Currently the algorithm pares every mean every iteration, maybe too much?
+def paredMeans(means,varAlignmentMatrix):
 	newMeans = []
-	for mean in means:
-		newMeans += originalPare(mean)
+	for j in range(len(means)):
+		#make sure the pare function doesn't change the alignment matrix
+		newMeans += segPare(means[j],list(varAlignmentMatrix[j]))
 	return newMeans
+
+# # Uses originalPare, but unboxes 
+# def paredMeans(means,alignmentMatrix):
+# 	newMeans = []
+# 	for mean in means:
+# 		newMeans += originalPare(mean)
+# 	return newMeans

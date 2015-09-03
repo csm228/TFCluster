@@ -215,7 +215,7 @@ def pickNewMeansOutliersToRandom (clusters, numMeans):
 	print str(numMeans) + " seeds to pick this cycle, not by cluster variance"
 	print str(numOutliers) + " outliers this cycle"
 	if numMeans < numOutliers:
-		means += pickMeans(outliers, numOutliers)
+		means += pickMeans(outliers, numMeans)
 	else:
 		means += pickMeans(outliers, numOutliers)
 		numMeans -= numOutliers

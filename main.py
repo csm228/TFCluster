@@ -27,6 +27,11 @@ def guessInitMeans(peaks):
 def guessNewMeans(peaks, means, p_val):
 	return 6
 
+#Guesses how many more means will be needed
+#Based on having a known/expected k
+def guessNewMeansSetK(peaks, means, p_val, expectedK):
+	return abs(len(means) - expectedK) + 1
+
 #Now using varAlignmentMatrix
 def variance (cluster,meanNum,varAlignmentMatrix):
 	sumVar = 0
@@ -111,6 +116,44 @@ def main (peaks):
 	while p_val < probabilityThreshold:
 		means = paring.paredMeans(means,varAlignmentMatrix)
 		numNewMeans = guessNewMeans(peaks, means, p_val)
+		#currently, no correlation between how many means duplicated/dropped in paring
+		#and how many and from where they are added in mean picking
+		# means += seed.pickMeans(peaks, numNewMeans)
+		means += seed.pickNewMeansOutliersToRandom(clusters, numNewMeans)
+		# means += seed.pickNewMeans(clusters, numNewMeans, clusterVariances)
+		alignmentMatrix = align.generate_align_matrix(peaks,means)
+		(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
+		varAlignmentMatrix = align.generate_var_align_matrix(clusters)
+		(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
+		print 'finished clustering of subsequent k guess'
+	return clusters
+
+
+#Added for guessed-k functionality
+# print a line when the variance goes back up between means?
+# Requires a list of peaks where the sequence is the first element of the peak
+def mainSetK (peaks,expectedK):
+	# means = seed.pickInitMeans(peaks,expectedK)
+	#
+	# numMeans = expectedK
+	# numMatrixSeeds = int(0.75 * numMeans) + 1
+	# means = matrixSeed.pickInitSeeds(peaks,numMatrixSeeds)
+	# means += seed.pickInitMeans(peaks,numMeans-numMatrixSeeds)
+	#
+	means = matrixSeed.pickInitSeeds(peaks,expectedK)
+	print peaks[0]
+	#The extra list at the beginning is for outliers,and is initialized with all peaks
+	clusters = [peaks] + clustrifyMeans(means)
+	alignmentMatrix = align.generate_align_matrix(peaks,means)
+	clusterVariances = [0]*5 #just something so that the first Welch's test doesn't cause termination
+	print 'first runthrough of clustering'
+	(means,clusters) = cluster.cluster(peaks,means,alignmentMatrix)
+	varAlignmentMatrix = align.generate_var_align_matrix(clusters)
+	print 'starting welch\'s t-test clustering with centroid means'
+	(p_val, clusterVariances) = welchTest(clusters,varAlignmentMatrix,clusterVariances)
+	while p_val < probabilityThreshold:
+		means = paring.paredMeans(means,varAlignmentMatrix)
+		numNewMeans = guessNewMeansSetK(peaks, means, p_val, expectedK)
 		#currently, no correlation between how many means duplicated/dropped in paring
 		#and how many and from where they are added in mean picking
 		# means += seed.pickMeans(peaks, numNewMeans)
