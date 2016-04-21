@@ -49,7 +49,7 @@ def makeMotif(distr, base_conserv, min_length, max_length, split):
 				base_prob = base_prob + new_prob
 				bases.remove(new_base)
 			new_base = random.choice(bases)
-			prob_left = 100-base_prob
+			prob_left = 100 - base_prob
 			base_matrix.update({new_base:prob_left})
 			matrix.append(base_matrix)
 	else:
